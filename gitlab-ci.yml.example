@@ -1,0 +1,56 @@
+stages: # List of stages for jobs, and their order ofexecution
+  - build
+  - deploy
+build-job: # This job runs in the build stage, which runs first.
+  image: maven:3-jdk-8
+  stage: build
+  script:
+    - mvn clean package -DskipTests
+  only:
+    refs:
+      - master
+
+#deploy-job: # This job runs in the deploy stage.
+#  stage: deploy # It only runs when *both* jobs in the test stage complete successfully.
+#  script:
+#    - echo "Deploying application..."
+#    - echo "Application successfully deployed."
+
+staging:
+  image: ruby:2.4
+  stage: deploy
+  variables:
+    ACTIVE_PROFILE: staging
+  before_script:
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - echo "Running ${ACTIVE_PROFILE}..."
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_STAGING --api-key=$HEROKU_APP_KEY_STAGING
+    - export HEROKU_API_KEY=$HEROKU_APP_KEY
+    - heroku run --app $HEROKU_APP_NAME_STAGING migrate
+  environment:
+    name: staging
+    url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
+  only:
+    - development
+
+production:
+  image: ruby:2.4
+  stage: deploy
+  variables:
+    ACTIVE_PROFILE: prod
+  before_script:
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - echo "Running ${ACTIVE_PROFILE}..."
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_APP_KEY
+    - export HEROKU_API_KEY=$HEROKU_APP_KEY
+    - heroku run --app $HEROKU_APP_NAME migrate
+  environment:
+    name: production
+    url: https://${HEROKU_APP_NAME}.herokuapp.com
+  only:
+    - production
+    - master
