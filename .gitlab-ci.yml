@@ -12,6 +12,8 @@ build-staging: # This job runs in the build stage, which runs first.
 #    refs:
 #      - staging
 #      - merge_requests
+  environment:
+    name: staging
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
 
@@ -26,6 +28,8 @@ build-production: # This job runs in the build stage, which runs first.
   #    refs:
   #      - production
   #      - merge_requests
+  environment:
+    name: production
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
 
