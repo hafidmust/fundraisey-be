@@ -6,15 +6,13 @@ build-job: # This job runs in the build stage, which runs first.
   stage: build
   script:
     - mvn clean package -DskipTests
-  only:
-    refs:
-      - master
-
-#deploy-job: # This job runs in the deploy stage.
-#  stage: deploy # It only runs when *both* jobs in the test stage complete successfully.
-#  script:
-#    - echo "Deploying application..."
-#    - echo "Application successfully deployed."
+#  only:
+#    refs:
+#      - staging
+#      - production
+#      - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
 
 staging:
   image: ruby:2.4
@@ -32,8 +30,11 @@ staging:
   environment:
     name: staging
     url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
-  only:
-    - development
+#  only:
+#    - staging
+#    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
 
 production:
   image: ruby:2.4
@@ -51,6 +52,8 @@ production:
   environment:
     name: production
     url: https://${HEROKU_APP_NAME}.herokuapp.com
-  only:
-    - production
-    - master
+#  only:
+#    - production
+#    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'

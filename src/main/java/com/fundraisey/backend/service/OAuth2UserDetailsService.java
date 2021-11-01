@@ -23,5 +23,14 @@ public class OAuth2UserDetailsService implements UserDetailsService{
 
         return user;
     }
+
+    public UserDetails loadUserByEmail(String s) throws UsernameNotFoundException {
+        User user = userRepository.findOneByEmail(s);
+        if (null == user) {
+            throw new UsernameNotFoundException(String.format("Email %s not found", s));
+        }
+
+        return user;
+    }
 }
 
