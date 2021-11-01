@@ -33,7 +33,7 @@ staging:
     name: staging
     url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
   only:
-    - development
+    - staging
 
 production:
   image: ruby:2.4
