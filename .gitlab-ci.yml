@@ -6,11 +6,11 @@ build-job: # This job runs in the build stage, which runs first.
   stage: build
   script:
     - mvn clean package -DskipTests
-  only:
-    refs:
-      - staging
-      - production
-      - merge_requests
+#  only:
+#    refs:
+#      - staging
+#      - production
+#      - merge_requests
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
 
@@ -30,9 +30,9 @@ staging:
   environment:
     name: staging
     url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
-  only:
-    - staging
-    - merge_requests
+#  only:
+#    - staging
+#    - merge_requests
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
 
@@ -52,8 +52,8 @@ production:
   environment:
     name: production
     url: https://${HEROKU_APP_NAME}.herokuapp.com
-  only:
-    - production
-    - merge_requests
+#  only:
+#    - production
+#    - merge_requests
   rules:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
