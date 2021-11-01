@@ -34,6 +34,9 @@ staging:
     url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
   only:
     - staging
+    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
 
 production:
   image: ruby:2.4
@@ -54,3 +57,6 @@ production:
   only:
     - production
     - master
+    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
