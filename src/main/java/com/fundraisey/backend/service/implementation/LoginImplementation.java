@@ -16,7 +16,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,9 @@ public class LoginImplementation implements LoginService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     private ResponseTemplate responseTemplate = new ResponseTemplate();
 
     Logger logger = LoggerFactory.getLogger(LoginImplementation.class);
@@ -45,6 +50,22 @@ public class LoginImplementation implements LoginService {
     public Map login(LoginModel loginModel) {
         try {
             Map<String, Object> map = new HashMap<>();
+
+            User checkUser = userRepository.findOneByEmail(loginModel.getEmail());
+
+            if ((checkUser != null) && (encoder.matches(loginModel.getPassword(),checkUser.getPassword()))) {
+                if (!checkUser.isEnabled()) {
+                    map.put("is_enabled", checkUser.isEnabled());
+                    return responseTemplate.success(map);
+                }
+            }
+            if (checkUser == null){
+                return responseTemplate.notFound("user not found");
+            }
+            if (!(encoder.matches(loginModel.getPassword(),checkUser.getPassword()))) {
+                return responseTemplate.isRequired("wrong password");
+            }
+
             String url = baseUrl + "/oauth/token?username=" + loginModel.getEmail() +
                     "&password=" + loginModel.getPassword() +
                     "&grant_type=" + loginModel.getGrant_type() +
@@ -66,11 +87,18 @@ public class LoginImplementation implements LoginService {
 
                 map.put("access_token", response.getBody().get("access_token"));
                 map.put("roles", roles);
+                map.put("is_enabled", user.isEnabled());
 
                 return responseTemplate.success(map);
             } else {
                 return responseTemplate.notFound("user not found");
             }
+        } catch (HttpStatusCodeException e) {
+            e.printStackTrace();
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return responseTemplate.isRequired("invalid login");
+            }
+            return responseTemplate.internalServerError(e);
         } catch (Exception e) {
             e.printStackTrace();
 

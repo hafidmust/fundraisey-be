@@ -38,7 +38,6 @@ public class User extends DateProps implements UserDetails, Serializable {
         return this.fullname;
     }
 
-    @Size(min = 8)
     @JsonIgnore
     private String password;
 
@@ -189,6 +188,18 @@ public class User extends DateProps implements UserDetails, Serializable {
 
     public void setOtpExpiredDate(Date otpExpiredDate) {
         this.otpExpiredDate = otpExpiredDate;
+    }
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    List<UserDetail> userDetail;
+
+    List<UserDetail> getUserDetail() {
+        return userDetail;
+    }
+
+    void setUserDetail(List<UserDetail> userDetail) {
+        this.userDetail = userDetail;
     }
 }
 

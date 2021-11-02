@@ -6,4 +6,5 @@ import lombok.Data;
 public class LoginResponseModel {
     private String access_token;
     private String[] roles;
+    private boolean is_enabled;
 }
