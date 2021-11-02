@@ -74,7 +74,7 @@ public class RegisterImplementation implements RegisterService {
 
             User newUser = userRepository.save(user);
 
-            return responseTemplate.success(newUser);
+            return responseTemplate.success(null);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
