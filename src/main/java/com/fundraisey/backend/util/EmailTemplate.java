@@ -117,11 +117,10 @@ public class EmailTemplate {
                 "\t\t\n" +
                 "\t\tkode: <b>{{PASS_TOKEN}}</b>\n" +
                 "\t\t\n" +
-                "\t\t<p class=\"mt--15\">Jika kamu butuh bantuan atau pertanyaan, hubungi customer care kami di .... atau kirim email ke....</p>\n" +
-                "\t\t\n" +
                 "\t\t<p>Semoga harimu menyenangkan!</p>\n" +
                 "\t\t\n" +
-                "\t\t<p>PT,</p>\n" +
+                "\t\t\n" +
+                "\t\t<p>Fundraisey</p>\n" +
                 "\t\t<p class=\"mt--15\".....</p>\n" +
                 "\n" +
                 "\t\t\n" +
