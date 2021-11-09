@@ -121,6 +121,7 @@ public class RegisterImplementation implements RegisterService {
             userDetail.setFullName(registerModel.getFullName());
             userDetail.setPhoneNumber(registerModel.getPhoneNumber());
             userDetail.setDateOfBirth(registerModel.getDateOfBirth());
+            userDetail.setGender(registerModel.getGender());
 
             userDetailRepository.save(userDetail);
 
@@ -162,6 +163,7 @@ public class RegisterImplementation implements RegisterService {
             userDetail.setFullName(registerModel.getFullName());
             userDetail.setPhoneNumber(registerModel.getPhoneNumber());
             userDetail.setDateOfBirth(registerModel.getDateOfBirth());
+            userDetail.setGender(registerModel.getGender());
 
             userDetailRepository.save(userDetail);
 
