@@ -121,6 +121,7 @@ public class RegisterImplementation implements RegisterService {
             userDetail.setFullName(registerModel.getFullName());
             userDetail.setPhoneNumber(registerModel.getPhoneNumber());
             userDetail.setDateOfBirth(registerModel.getDateOfBirth());
+            userDetail.setGender(registerModel.getGender());
 
             userDetailRepository.save(userDetail);
 
@@ -162,6 +163,7 @@ public class RegisterImplementation implements RegisterService {
             userDetail.setFullName(registerModel.getFullName());
             userDetail.setPhoneNumber(registerModel.getPhoneNumber());
             userDetail.setDateOfBirth(registerModel.getDateOfBirth());
+            userDetail.setGender(registerModel.getGender());
 
             userDetailRepository.save(userDetail);
 
@@ -178,6 +180,7 @@ public class RegisterImplementation implements RegisterService {
         if (email == null) return responseTemplate.isRequired("No email provided");
         User found = userRepository.findOneByEmail(email);
         if (found == null) return responseTemplate.notFound("Email not found");
+        if (found.isEnabled()) return responseTemplate.notAllowed("Already verified");
 
         String template = emailTemplate.getRegister();
 
