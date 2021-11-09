@@ -43,6 +43,13 @@ public class ResponseTemplate {
         return map;
     }
 
+    public Map notAllowed(String message) {
+        Map<String, Object> map = new HashMap();
+        map.put("status", 403);
+        map.put("message", message);
+        return map;
+    }
+
     public Map internalServerError(Object message) {
         Map<String, Object> map = new HashMap();
         map.put("status", 500);
