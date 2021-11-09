@@ -63,9 +63,9 @@ public class ResponseTemplate {
         } else if ((Integer) response.get("status") == 400) {
             return new ResponseEntity<Map>(response, HttpStatus.BAD_REQUEST);
         } else if ((Integer) response.get("status") == 403) {
-            return new ResponseEntity<Map>(response, HttpStatus.NOT_FOUND);
-        } else if ((Integer) response.get("status") == 404) {
             return new ResponseEntity<Map>(response, HttpStatus.FORBIDDEN);
+        } else if ((Integer) response.get("status") == 404) {
+            return new ResponseEntity<Map>(response, HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<Map>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
