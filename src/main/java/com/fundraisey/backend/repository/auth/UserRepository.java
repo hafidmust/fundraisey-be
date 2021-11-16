@@ -2,7 +2,7 @@ package com.fundraisey.backend.repository.auth;
 
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
-import com.fundraisey.backend.entity.auth.UserDetail;
+import com.fundraisey.backend.entity.investor.Investor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

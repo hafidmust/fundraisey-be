@@ -1,6 +1,6 @@
 package com.fundraisey.backend.controller.fileupload;
 
-import com.fundraisey.backend.repository.UserDetailRepository;
+import com.fundraisey.backend.repository.InvestorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -26,7 +26,7 @@ public class FileStorageService {
     String strDate = formatter.format(date);
 
     @Autowired
-    UserDetailRepository userDetailRepository;
+    InvestorRepository investorRepository;
 
     @Autowired
     public FileStorageService(FileStorageProperties fileStorageProperties) {

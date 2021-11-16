@@ -3,9 +3,9 @@ package com.fundraisey.backend.service.implementation;
 
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
-import com.fundraisey.backend.entity.auth.UserDetail;
+import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.model.UserModel;
-import com.fundraisey.backend.repository.UserDetailRepository;
+import com.fundraisey.backend.repository.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.service.UserService;
@@ -29,7 +29,7 @@ public class UserImplementation implements UserService {
     UserRepository userRepository;
 
     @Autowired
-    UserDetailRepository userDetailRepository;
+    InvestorRepository investorRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -58,17 +58,17 @@ public class UserImplementation implements UserService {
             for (User user : users.getContent()) {
                 UserModel userModel = new UserModel();
 
-                UserDetail userDetail = userDetailRepository.getByUserId(user.getId());
+                Investor investor = investorRepository.getByInvestorId(user.getId());
 
                 userModel.setId(user.getId());
                 userModel.setEmail(user.getEmail());
 
-                if (userDetail != null) {
-                    userModel.setCitizenID(userDetail.getCitizenID());
-                    userModel.setFullName(userDetail.getFullName());
-                    userModel.setPhoneNumber(userDetail.getPhoneNumber());
-                    userModel.setGender(userDetail.getGender());
-                    userModel.setDateOfBirth(userDetail.getDateOfBirth());
+                if (investor != null) {
+                    userModel.setCitizenID(investor.getCitizenID());
+                    userModel.setFullName(investor.getFullName());
+                    userModel.setPhoneNumber(investor.getPhoneNumber());
+                    userModel.setGender(investor.getGender());
+                    userModel.setDateOfBirth(investor.getDateOfBirth());
                 } else {
                     userModel.setCitizenID(null);
                     userModel.setFullName(null);
@@ -106,17 +106,17 @@ public class UserImplementation implements UserService {
 
             User user = userRepository.findOneByEmail(email);
 
-            UserDetail userDetail = userDetailRepository.getByUserId(user.getId());
+            Investor investor = investorRepository.getByInvestorId(user.getId());
 
             userModel.setId(user.getId());
             userModel.setEmail(user.getEmail());
 
-            if (userDetail != null) {
-                userModel.setCitizenID(userDetail.getCitizenID());
-                userModel.setFullName(userDetail.getFullName());
-                userModel.setPhoneNumber(userDetail.getPhoneNumber());
-                userModel.setGender(userDetail.getGender());
-                userModel.setDateOfBirth(userDetail.getDateOfBirth());
+            if (investor != null) {
+                userModel.setCitizenID(investor.getCitizenID());
+                userModel.setFullName(investor.getFullName());
+                userModel.setPhoneNumber(investor.getPhoneNumber());
+                userModel.setGender(investor.getGender());
+                userModel.setDateOfBirth(investor.getDateOfBirth());
             } else {
                 userModel.setCitizenID(null);
                 userModel.setFullName(null);
@@ -135,20 +135,20 @@ public class UserImplementation implements UserService {
     @Override
     public Map update(UserModel userModel) {
         User user = userRepository.getById(userModel.getId());
-        UserDetail userDetail = userDetailRepository.getByUserId(user.getId());
+        Investor investor = investorRepository.getByInvestorId(user.getId());
 
-        if (userDetail == null) {
-            userDetail = new UserDetail();
-            userDetail.setUser(user);
+        if (investor == null) {
+            investor = new Investor();
+            investor.setUser(user);
         }
 
-        userDetail.setCitizenID(userModel.getCitizenID());
-        userDetail.setFullName(userModel.getFullName());
-        userDetail.setPhoneNumber(userModel.getPhoneNumber());
-        userDetail.setGender(userModel.getGender());
-        userDetail.setDateOfBirth(userModel.getDateOfBirth());
+        investor.setCitizenID(userModel.getCitizenID());
+        investor.setFullName(userModel.getFullName());
+        investor.setPhoneNumber(userModel.getPhoneNumber());
+        investor.setGender(userModel.getGender());
+        investor.setDateOfBirth(userModel.getDateOfBirth());
 
-        userDetailRepository.save(userDetail);
+        investorRepository.save(investor);
 
         return responseTemplate.success(null);
     }

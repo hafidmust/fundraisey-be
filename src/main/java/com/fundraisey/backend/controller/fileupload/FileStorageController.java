@@ -1,7 +1,7 @@
 package com.fundraisey.backend.controller.fileupload;
 
-import com.fundraisey.backend.entity.auth.UserDetail;
-import com.fundraisey.backend.repository.UserDetailRepository;
+import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.repository.InvestorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class FileStorageController {
     private FileStorageService fileStorageService;
 
     @Autowired
-    private UserDetailRepository userDetailRepository;
+    private InvestorRepository investorRepository;
 
     public FileStorageController() {
     }
@@ -52,9 +52,9 @@ public class FileStorageController {
             return new UploadFileResponse(file.getOriginalFilename(), null, file.getContentType(), file.getSize(), e.getMessage());
         }
         if (id != null) {
-            UserDetail objUser = userDetailRepository.getById(id);
-            objUser.setProfilePicture(fileName);
-            userDetailRepository.save(objUser);
+            Investor objInvestor = investorRepository.getById(id);
+            objInvestor.setProfilePicture(fileName);
+            investorRepository.save(objInvestor);
         }
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
