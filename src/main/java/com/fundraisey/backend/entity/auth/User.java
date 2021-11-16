@@ -2,13 +2,13 @@ package com.fundraisey.backend.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
+import com.fundraisey.backend.entity.startup.Startup;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -198,8 +198,16 @@ public class User extends DateProps implements UserDetails, Serializable {
         return userDetail;
     }
 
-    void setUserDetail(List<UserDetail> userDetail) {
-        this.userDetail = userDetail;
+    void setUserDetail(List<UserDetail> userDetil) {
+        this.userDetail = userDetil;
     }
+
+    // user <-> startup
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Startup startup;
+
+    private Startup getStartup() { return startup; }
+
+    private void setStartup(Startup start) { this.startup = start; }
 }
 
