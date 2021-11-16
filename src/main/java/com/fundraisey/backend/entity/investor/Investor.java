@@ -1,8 +1,10 @@
-package com.fundraisey.backend.entity.auth;
+package com.fundraisey.backend.entity.investor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
+import com.fundraisey.backend.entity.auth.Gender;
+import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,17 +16,12 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "user_detail")
-public class UserDetail extends DateProps implements Serializable {
+@Table(name = "investor")
+public class Investor extends DateProps implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_user", referencedColumnName = "id")
-    private User user;
 
     @Column(length = 100, nullable = true, name = "citizen_id")
     private String citizenID;
@@ -47,4 +44,9 @@ public class UserDetail extends DateProps implements Serializable {
     @JsonFormat(pattern="dd-MM-yyyy")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
+
+    @JsonIgnore
+    @OneToOne(targetEntity = User.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
+    private User user;
 }

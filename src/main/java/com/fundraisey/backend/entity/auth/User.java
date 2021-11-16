@@ -2,6 +2,7 @@ package com.fundraisey.backend.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
+import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Startup;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -191,15 +192,15 @@ public class User extends DateProps implements UserDetails, Serializable {
     }
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    List<UserDetail> userDetail;
+    @OneToOne(mappedBy = "user")
+    private Investor investor;
 
-    List<UserDetail> getUserDetail() {
-        return userDetail;
+    private Investor getInvestor() {
+        return investor;
     }
 
-    void setUserDetail(List<UserDetail> userDetil) {
-        this.userDetail = userDetil;
+    private void setInvestor(Investor investor1) {
+        this.investor = investor1;
     }
 
     // user <-> startup
