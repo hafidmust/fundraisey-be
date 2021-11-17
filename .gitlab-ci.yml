@@ -1,37 +1,30 @@
 stages: # List of stages for jobs, and their order ofexecution
-  - build
+#  - build
   - deploy
-build-staging: # This job runs in the build stage, which runs first.
-  image: maven:3-jdk-8
-  stage: build
-  variables:
-    SPRING_PROFILES_ACTIVE: staging
-  script:
-    - mvn clean package -DskipTests
-#  only:
-#    refs:
-#      - staging
-#      - merge_requests
-  environment:
-    name: staging
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
 
-build-production: # This job runs in the build stage, which runs first.
-  image: maven:3-jdk-8
-  stage: build
-  variables:
-    SPRING_PROFILES_ACTIVE: prod
-  script:
-    - mvn clean package -DskipTests
-  #  only:
-  #    refs:
-  #      - production
-  #      - merge_requests
-  environment:
-    name: production
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
+#build-staging: # This job runs in the build stage, which runs first.
+#  image: maven:3-jdk-8
+#  stage: build
+#  variables:
+#    SPRING_PROFILES_ACTIVE: staging
+#  script:
+#    - mvn clean package -DskipTests
+#  environment:
+#    name: staging
+#  rules:
+#    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
+
+#build-production: # This job runs in the build stage, which runs first.
+#  image: maven:3-jdk-8
+#  stage: build
+#  variables:
+#    SPRING_PROFILES_ACTIVE: prod
+#  script:
+#    - mvn clean package -DskipTests
+#  environment:
+#    name: production
+#  rules:
+#    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
 
 staging:
   image: ruby:2.4
