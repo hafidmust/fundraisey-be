@@ -1,0 +1,78 @@
+stages: # List of stages for jobs, and their order ofexecution
+  - build
+  - deploy
+build-staging: # This job runs in the build stage, which runs first.
+  image: maven:3-jdk-8
+  stage: build
+  variables:
+    SPRING_PROFILES_ACTIVE: staging
+  script:
+    - mvn clean package -DskipTests
+#  only:
+#    refs:
+#      - staging
+#      - merge_requests
+  environment:
+    name: staging
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
+
+build-production: # This job runs in the build stage, which runs first.
+  image: maven:3-jdk-8
+  stage: build
+  variables:
+    SPRING_PROFILES_ACTIVE: prod
+  script:
+    - mvn clean package -DskipTests
+  #  only:
+  #    refs:
+  #      - production
+  #      - merge_requests
+  environment:
+    name: production
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
+
+staging:
+  image: ruby:2.4
+  stage: deploy
+  variables:
+    SPRING_PROFILES_ACTIVE: staging
+  before_script:
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - echo "Running ${ACTIVE_PROFILE}..."
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME_STAGING --api-key=$HEROKU_APP_KEY_STAGING
+    - export HEROKU_API_KEY=$HEROKU_APP_KEY
+    - heroku run --app $HEROKU_APP_NAME_STAGING migrate
+  environment:
+    name: staging
+    url: https://${HEROKU_APP_NAME_STAGING}.herokuapp.com
+#  only:
+#    - staging
+#    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging"'
+
+production:
+  image: ruby:2.4
+  stage: deploy
+  variables:
+    SPRING_PROFILES_ACTIVE: prod
+  before_script:
+    - gem install dpl
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+  script:
+    - echo "Running ${ACTIVE_PROFILE}..."
+    - dpl --provider=heroku --app=$HEROKU_APP_NAME --api-key=$HEROKU_APP_KEY
+    - export HEROKU_API_KEY=$HEROKU_APP_KEY
+    - heroku run --app $HEROKU_APP_NAME migrate
+  environment:
+    name: production
+    url: https://${HEROKU_APP_NAME}.herokuapp.com
+#  only:
+#    - production
+#    - merge_requests
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "production"'
