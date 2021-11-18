@@ -22,7 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+// Unused
+//@RestController
 public class FileStorageController {
     private final static Logger logger = LoggerFactory.getLogger(FileStorageController.class);
 
