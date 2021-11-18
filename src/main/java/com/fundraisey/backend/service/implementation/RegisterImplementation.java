@@ -2,9 +2,9 @@ package com.fundraisey.backend.service.implementation;
 
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
-import com.fundraisey.backend.entity.auth.UserDetail;
+import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.model.RegisterModel;
-import com.fundraisey.backend.repository.UserDetailRepository;
+import com.fundraisey.backend.repository.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.service.RegisterService;
@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -27,7 +25,7 @@ public class RegisterImplementation implements RegisterService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserDetailRepository userDetailRepository;
+    private InvestorRepository investorRepository;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -115,15 +113,15 @@ public class RegisterImplementation implements RegisterService {
 
             User newUser = userRepository.save(user);
 
-            UserDetail userDetail = new UserDetail();
-            userDetail.setUser(newUser);
-            userDetail.setCitizenID(registerModel.getCitizenID());
-            userDetail.setFullName(registerModel.getFullName());
-            userDetail.setPhoneNumber(registerModel.getPhoneNumber());
-            userDetail.setDateOfBirth(registerModel.getDateOfBirth());
-            userDetail.setGender(registerModel.getGender());
+            Investor investor = new Investor();
+            investor.setUser(newUser);
+            investor.setCitizenID(registerModel.getCitizenID());
+            investor.setFullName(registerModel.getFullName());
+            investor.setPhoneNumber(registerModel.getPhoneNumber());
+            investor.setDateOfBirth(registerModel.getDateOfBirth());
+            investor.setGender(registerModel.getGender());
 
-            userDetailRepository.save(userDetail);
+            investorRepository.save(investor);
 
             return responseTemplate.success(null);
         } catch (Exception e) {
@@ -157,15 +155,15 @@ public class RegisterImplementation implements RegisterService {
 
             User newUser = userRepository.save(user);
 
-            UserDetail userDetail = new UserDetail();
-            userDetail.setUser(newUser);
-            userDetail.setCitizenID(registerModel.getCitizenID());
-            userDetail.setFullName(registerModel.getFullName());
-            userDetail.setPhoneNumber(registerModel.getPhoneNumber());
-            userDetail.setDateOfBirth(registerModel.getDateOfBirth());
-            userDetail.setGender(registerModel.getGender());
+            Investor investor = new Investor();
+            investor.setUser(newUser);
+            investor.setCitizenID(registerModel.getCitizenID());
+            investor.setFullName(registerModel.getFullName());
+            investor.setPhoneNumber(registerModel.getPhoneNumber());
+            investor.setDateOfBirth(registerModel.getDateOfBirth());
+            investor.setGender(registerModel.getGender());
 
-            userDetailRepository.save(userDetail);
+            investorRepository.save(investor);
 
             return responseTemplate.success(null);
         } catch (Exception e) {
