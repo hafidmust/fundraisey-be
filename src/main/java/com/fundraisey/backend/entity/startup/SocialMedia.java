@@ -24,12 +24,11 @@ public class SocialMedia extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = SocialMediaPlatform.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = SocialMediaPlatform.class)
     @JoinColumn(name = "id_social_media_platform", referencedColumnName = "id")
     private SocialMediaPlatform socialMediaPlatform;
 
-    @JsonIgnore
-    @OneToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Startup.class)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup socialMediaStartup;
 

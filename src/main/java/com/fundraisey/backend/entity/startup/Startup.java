@@ -1,6 +1,5 @@
 package com.fundraisey.backend.entity.startup;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
@@ -29,7 +28,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
-    @Column(length = 100, nullable = true, name = "description")
+    @Column(length = 200, nullable = true, name = "description")
     private String description;
 
     @Column(length = 100, nullable = true, name = "logo")
@@ -41,23 +40,29 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "web")
     private String web;
 
-    @Column(length = 100, nullable = true, name = "address")
+    @Column(length = 200, nullable = true, name = "address")
     private String address;
 
-    @Column(length = 100, nullable = true, name = "born_date")
+    @Column(length = 100, nullable = true, name = "founded_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date bornDate;
+    private Date foundedDate;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
-    @OneToOne(mappedBy = "socialMediaStartup", cascade = CascadeType.ALL)
-    private SocialMedia socialMedia;
+    @OneToMany(mappedBy = "socialMediaStartup", cascade = CascadeType.ALL)
+    private List<SocialMedia> socialMedias;
 
-    @OneToMany(mappedBy = "projectStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Project> projects;
+    @OneToMany(mappedBy = "fundingStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Funding> fundings;
+
+    @OneToMany(mappedBy = "productStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "credentialStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Credential> credentials;
 }
