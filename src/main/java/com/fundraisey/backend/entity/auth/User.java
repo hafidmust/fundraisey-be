@@ -3,6 +3,7 @@ package com.fundraisey.backend.entity.auth;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.LoanComment;
 import com.fundraisey.backend.entity.startup.Startup;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -199,16 +200,27 @@ public class User extends DateProps implements UserDetails, Serializable {
         return investor;
     }
 
-    private void setInvestor(Investor investor1) {
-        this.investor = investor1;
+    private void setInvestor(Investor investor) {
+        this.investor = investor;
     }
 
     // user <-> startup
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Startup startup;
 
     private Startup getStartup() { return startup; }
 
     private void setStartup(Startup start) { this.startup = start; }
+
+    @OneToMany(mappedBy = "user")
+    private List<LoanComment> loanComment;
+
+    private List<LoanComment> getLoanComment() {
+        return this.loanComment;
+    }
+
+    private void setLoanComment(List<LoanComment> loanComment) {
+        this.loanComment = loanComment;
+    }
 }
 

@@ -31,7 +31,7 @@ public class SocialMedia extends DateProps implements Serializable {
     @JsonIgnore
     @OneToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
-    private Startup socialMediaStartup;
+    private Startup startup;
 
     @Column(length = 100, nullable = true, name = "url")
     private String url;
