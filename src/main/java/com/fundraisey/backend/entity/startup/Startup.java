@@ -44,7 +44,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "address")
     private String address;
 
-    @Column(length = 100, nullable = true, name = "founded_date")
+    @Column(length = 100, nullable = true, name = "born_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -55,9 +55,18 @@ public class Startup extends DateProps implements Serializable {
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "startup")
-    private List<SocialMedia> socialMedia;
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    private List<Loan> loans;
 
-    @OneToMany(mappedBy = "startup")
-    private List<Loan> projects;
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    private List<SocialMedia> socialMedias;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    private List<Credential> credentials;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    private List<StartupNotification> startupNotifications ;
 }

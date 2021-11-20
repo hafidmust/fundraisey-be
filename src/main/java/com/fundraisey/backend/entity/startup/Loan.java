@@ -11,18 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-// atribut/ field table =
-// ->name,
-// ->description,
-// ->productPicture,
-// ->startDate, endDate
-// ->targetValue
-// ->interestRate
-// ->totalReturnPeriod
-// ->DateProps
-
-// foreign key = startupID
 @Getter
 @Setter
 @Entity
@@ -36,11 +26,8 @@ public class Loan extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
-    @Column(length = 100, nullable = true, name = "description")
+    @Column(nullable = true, name = "description")
     private String description;
-
-    @Column(length = 100, nullable = true, name = "product_picture")
-    private String productPicture;
 
     @Column(length = 100, nullable = true, name = "start_date")
     @Temporal(TemporalType.DATE)
@@ -55,13 +42,13 @@ public class Loan extends DateProps implements Serializable {
     private Date endDate;
 
     @Column(length = 100, nullable = true, name = "target_value")
-    private int targetValue;
+    private Long targetValue;
 
     @Column(length = 100, nullable = true, name = "interest_rate")
-    private float interestRate;
+    private Float interestRate;
 
     @Column(length = 100, nullable = true, name = "total_return_period")
-    private int totalReturnPeriod;
+    private Integer totalReturnPeriod;
 
     @JsonIgnore
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
@@ -70,4 +57,7 @@ public class Loan extends DateProps implements Serializable {
 
     @OneToOne(mappedBy = "loan")
     private Transaction transaction;
+
+    @OneToMany(mappedBy = "loan")
+    private List<LoanComment> loanComment;
 }

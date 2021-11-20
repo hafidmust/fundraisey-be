@@ -29,7 +29,7 @@ public class SocialMedia extends DateProps implements Serializable {
     private SocialMediaPlatform socialMediaPlatform;
 
     @JsonIgnore
-    @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
 

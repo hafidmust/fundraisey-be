@@ -33,6 +33,6 @@ public class SocialMediaPlatform extends DateProps implements Serializable {
     private String website;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "socialMediaPlatform")
+    @OneToMany(mappedBy = "socialMediaPlatform", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<SocialMedia> socialMedia;
 }
