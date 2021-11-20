@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,4 +50,12 @@ public class Investor extends DateProps implements Serializable {
     @OneToOne(targetEntity = User.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "investor")
+    private List<BankAccount> bankAccounts;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "investor")
+    private InvestorVerification investorVerification;
 }

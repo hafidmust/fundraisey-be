@@ -199,12 +199,12 @@ public class User extends DateProps implements UserDetails, Serializable {
         return investor;
     }
 
-    private void setInvestor(Investor investor1) {
-        this.investor = investor1;
+    private void setInvestor(Investor investor) {
+        this.investor = investor;
     }
 
     // user <-> startup
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Startup startup;
 
     private Startup getStartup() { return startup; }
