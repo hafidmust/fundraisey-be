@@ -1,4 +1,4 @@
-package com.fundraisey.backend.repository;
+package com.fundraisey.backend.repository.investor;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;

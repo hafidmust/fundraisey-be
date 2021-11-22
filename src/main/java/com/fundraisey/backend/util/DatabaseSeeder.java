@@ -4,10 +4,14 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.transaction.PaymentAgent;
+import com.fundraisey.backend.entity.transaction.TransactionMethod;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
+import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,12 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private RolePathRepository rolePathRepository;
 
+    @Autowired
+    private PaymentAgentRepository paymentAgentRepository;
+
+    @Autowired
+    private TransactionMethodRepository transactionMethodRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -66,6 +76,13 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
+    private String[] paymentAgents = new String[] {
+            "Bank:BCA",
+            "Bank:Mandiri",
+            "E-Wallet:Gopay",
+            "E-Wallet:OVO"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -74,6 +91,31 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
+        this.insertPaymentAgents();
+    }
+
+    @Transactional
+    private void insertPaymentAgents() {
+        for (String paymentAgent: paymentAgents) {
+            String[] str = paymentAgent.split(":");
+            String transactionMethodName = str[0];
+            String paymentAgentName = str[1];
+
+            TransactionMethod transactionMethodObj = transactionMethodRepository.findOneByName(transactionMethodName);
+            if (transactionMethodObj == null) {
+                transactionMethodObj = new TransactionMethod();
+                transactionMethodObj.setName(transactionMethodName);
+                transactionMethodRepository.save(transactionMethodObj);
+            }
+
+            PaymentAgent paymentAgentObj = paymentAgentRepository.findOneByName(paymentAgentName);
+            if ((paymentAgentObj == null) || !transactionMethodName.equals(paymentAgentObj.getTransactionMethod().getName())) {
+                paymentAgentObj = new PaymentAgent();
+                paymentAgentObj.setName(paymentAgentName);
+                paymentAgentObj.setTransactionMethod(transactionMethodObj);
+                paymentAgentRepository.save(paymentAgentObj);
+            }
+        }
     }
 
     @Transactional

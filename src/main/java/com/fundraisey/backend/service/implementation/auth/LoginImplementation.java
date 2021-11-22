@@ -1,10 +1,10 @@
-package com.fundraisey.backend.service.implementation;
+package com.fundraisey.backend.service.implementation.auth;
 
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.model.LoginModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.service.LoginService;
+import com.fundraisey.backend.service.interfaces.auth.LoginService;
 import com.fundraisey.backend.service.OAuth2UserDetailsService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.slf4j.Logger;

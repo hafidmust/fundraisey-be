@@ -1,7 +1,7 @@
 package com.fundraisey.backend.controller;
 
 import com.fundraisey.backend.model.UserModel;
-import com.fundraisey.backend.service.UserService;
+import com.fundraisey.backend.service.interfaces.UserService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/v1/user")
 public class UserController {
 
     @Autowired

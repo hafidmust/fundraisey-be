@@ -1,13 +1,13 @@
-package com.fundraisey.backend.service.implementation;
+package com.fundraisey.backend.service.implementation.auth;
 
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.model.RegisterModel;
-import com.fundraisey.backend.repository.InvestorRepository;
+import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.service.RegisterService;
+import com.fundraisey.backend.service.interfaces.auth.RegisterService;
 import com.fundraisey.backend.util.EmailSender;
 import com.fundraisey.backend.util.EmailTemplate;
 import com.fundraisey.backend.util.ResponseTemplate;

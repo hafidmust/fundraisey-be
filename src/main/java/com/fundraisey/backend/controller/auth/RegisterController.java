@@ -1,25 +1,14 @@
 package com.fundraisey.backend.controller.auth;
 
-import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.model.RegisterModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.service.RegisterService;
-import com.fundraisey.backend.util.EmailSender;
-import com.fundraisey.backend.util.EmailTemplate;
+import com.fundraisey.backend.service.interfaces.auth.RegisterService;
 import com.fundraisey.backend.util.ResponseTemplate;
-import com.fundraisey.backend.util.SimpleStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

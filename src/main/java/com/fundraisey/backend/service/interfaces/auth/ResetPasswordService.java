@@ -1,4 +1,4 @@
-package com.fundraisey.backend.service;
+package com.fundraisey.backend.service.interfaces.auth;
 
 import java.util.Map;
 
