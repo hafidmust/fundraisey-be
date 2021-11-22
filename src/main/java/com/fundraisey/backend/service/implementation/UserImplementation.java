@@ -58,7 +58,7 @@ public class UserImplementation implements UserService {
             for (User user : users.getContent()) {
                 UserModel userModel = new UserModel();
 
-                Investor investor = investorRepository.getByInvestorId(user.getId());
+                Investor investor = investorRepository.getByUserId(user.getId());
 
                 userModel.setId(user.getId());
                 userModel.setEmail(user.getEmail());
@@ -106,7 +106,7 @@ public class UserImplementation implements UserService {
 
             User user = userRepository.findOneByEmail(email);
 
-            Investor investor = investorRepository.getByInvestorId(user.getId());
+            Investor investor = investorRepository.getByUserId(user.getId());
 
             userModel.setId(user.getId());
             userModel.setEmail(user.getEmail());
@@ -135,7 +135,7 @@ public class UserImplementation implements UserService {
     @Override
     public Map update(UserModel userModel) {
         User user = userRepository.getById(userModel.getId());
-        Investor investor = investorRepository.getByInvestorId(user.getId());
+        Investor investor = investorRepository.getByUserId(user.getId());
 
         if (investor == null) {
             investor = new Investor();

@@ -13,7 +13,7 @@ public interface InvestorRepository extends JpaRepository<Investor, Long> {
     Investor getById(@Param("id") Long id);
 
     @Query("SELECT u FROM Investor u WHERE u.user.id = :id")
-    Investor getByInvestorId(@Param("id") Long id);
+    Investor getByUserId(@Param("id") Long id);
 
     Investor findByUser(User user);
 }
