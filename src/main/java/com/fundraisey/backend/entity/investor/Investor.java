@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.Gender;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.transaction.Transaction;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -58,4 +59,8 @@ public class Investor extends DateProps implements Serializable {
     @JsonIgnore
     @OneToOne(mappedBy = "investor")
     private InvestorVerification investorVerification;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "investor")
+    private List<Transaction> transactions;
 }
