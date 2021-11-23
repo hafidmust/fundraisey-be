@@ -4,14 +4,18 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.PaymentAgent;
 import com.fundraisey.backend.entity.transaction.TransactionMethod;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
+import com.fundraisey.backend.repository.startup.StartupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +57,12 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private TransactionMethodRepository transactionMethodRepository;
 
+    @Autowired
+    private StartupRepository startupRepository;
+
+    @Autowired
+    private InvestorRepository investorRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -92,6 +102,35 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertClients(password);
         this.insertUser(password);
         this.insertPaymentAgents();
+        this.insertInvestor();
+        this.insertStartup();
+    }
+
+    @Transactional
+    private void insertInvestor() {
+        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        Investor investor = investorRepository.findByUser(user);
+
+        if (investor == null) {
+            investor = new Investor();
+            investor.setFullName("Fundraisey Investor");
+
+            investorRepository.save(investor);
+        }
+    }
+
+    @Transactional
+    private void insertStartup() {
+        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        Startup startup = startupRepository.findByUser(user);
+
+        if (startup == null) {
+            startup = new Startup();
+            startup.setName("Fundraisey");
+            startup.setDescription("Fundraisey is a startup fundraiser platform.");
+
+            startupRepository.save(startup);
+        }
     }
 
     @Transactional
