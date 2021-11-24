@@ -5,6 +5,7 @@ import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.PaymentAgent;
 import com.fundraisey.backend.entity.transaction.TransactionMethod;
@@ -15,6 +16,7 @@ import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
+import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,9 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private InvestorRepository investorRepository;
 
+    @Autowired
+    private PaymentPlanRepository paymentPlanRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -93,6 +98,12 @@ public class DatabaseSeeder implements ApplicationRunner {
             "E-Wallet:OVO"
     };
 
+    private String[] paymentPlans = new String[] {
+            "cash",
+            "per1year",
+            "per6months"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -104,6 +115,17 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertPaymentAgents();
         this.insertInvestor();
         this.insertStartup();
+        this.insertPaymentPlans();
+    }
+
+    @Transactional
+    private void insertPaymentPlans() {
+        for (String paymentPlanName : paymentPlans) {
+            PaymentPlan paymentPlan = new PaymentPlan();
+            paymentPlan.setName(paymentPlanName);
+
+            paymentPlanRepository.save(paymentPlan);
+        }
     }
 
     @Transactional
@@ -114,6 +136,7 @@ public class DatabaseSeeder implements ApplicationRunner {
         if (investor == null) {
             investor = new Investor();
             investor.setFullName("Fundraisey Investor");
+            investor.setUser(user);
 
             investorRepository.save(investor);
         }
@@ -128,6 +151,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             startup = new Startup();
             startup.setName("Fundraisey");
             startup.setDescription("Fundraisey is a startup fundraiser platform.");
+            startup.setUser(user);
 
             startupRepository.save(startup);
         }
