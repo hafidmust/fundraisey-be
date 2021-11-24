@@ -4,10 +4,20 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.PaymentPlan;
+import com.fundraisey.backend.entity.startup.Startup;
+import com.fundraisey.backend.entity.transaction.PaymentAgent;
+import com.fundraisey.backend.entity.transaction.TransactionMethod;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
+import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
+import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
+import com.fundraisey.backend.repository.startup.StartupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +53,26 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private RolePathRepository rolePathRepository;
 
+    @Autowired
+    private PaymentAgentRepository paymentAgentRepository;
+
+    @Autowired
+    private TransactionMethodRepository transactionMethodRepository;
+
+    @Autowired
+    private StartupRepository startupRepository;
+
+    @Autowired
+    private InvestorRepository investorRepository;
+
+    @Autowired
+    private PaymentPlanRepository paymentPlanRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
             "admin@fundraisey.com:ROLE_ADMIN",
-            "user@fundraisey.com:ROLE_INVESTOR ROLE_STARTUP",
+            // "user@fundraisey.com:ROLE_INVESTOR ROLE_STARTUP",
             "investor@fundraisey.com:ROLE_INVESTOR",
             "startup@fundraisey.com:ROLE_STARTUP"
     };
@@ -66,6 +91,19 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
+    private String[] paymentAgents = new String[] {
+            "Bank:BCA",
+            "Bank:Mandiri",
+            "E-Wallet:Gopay",
+            "E-Wallet:OVO"
+    };
+
+    private String[] paymentPlans = new String[] {
+            "cash",
+            "per1year",
+            "per6months"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -74,6 +112,73 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
+        this.insertPaymentAgents();
+        this.insertInvestor();
+        this.insertStartup();
+        this.insertPaymentPlans();
+    }
+
+    @Transactional
+    private void insertPaymentPlans() {
+        for (String paymentPlanName : paymentPlans) {
+            PaymentPlan paymentPlan = new PaymentPlan();
+            paymentPlan.setName(paymentPlanName);
+
+            paymentPlanRepository.save(paymentPlan);
+        }
+    }
+
+    @Transactional
+    private void insertInvestor() {
+        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        Investor investor = investorRepository.findByUser(user);
+
+        if (investor == null) {
+            investor = new Investor();
+            investor.setFullName("Fundraisey Investor");
+            investor.setUser(user);
+
+            investorRepository.save(investor);
+        }
+    }
+
+    @Transactional
+    private void insertStartup() {
+        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        Startup startup = startupRepository.findByUser(user);
+
+        if (startup == null) {
+            startup = new Startup();
+            startup.setName("Fundraisey");
+            startup.setDescription("Fundraisey is a startup fundraiser platform.");
+            startup.setUser(user);
+
+            startupRepository.save(startup);
+        }
+    }
+
+    @Transactional
+    private void insertPaymentAgents() {
+        for (String paymentAgent: paymentAgents) {
+            String[] str = paymentAgent.split(":");
+            String transactionMethodName = str[0];
+            String paymentAgentName = str[1];
+
+            TransactionMethod transactionMethodObj = transactionMethodRepository.findOneByName(transactionMethodName);
+            if (transactionMethodObj == null) {
+                transactionMethodObj = new TransactionMethod();
+                transactionMethodObj.setName(transactionMethodName);
+                transactionMethodRepository.save(transactionMethodObj);
+            }
+
+            PaymentAgent paymentAgentObj = paymentAgentRepository.findOneByName(paymentAgentName);
+            if ((paymentAgentObj == null) || !transactionMethodName.equals(paymentAgentObj.getTransactionMethod().getName())) {
+                paymentAgentObj = new PaymentAgent();
+                paymentAgentObj.setName(paymentAgentName);
+                paymentAgentObj.setTransactionMethod(transactionMethodObj);
+                paymentAgentRepository.save(paymentAgentObj);
+            }
+        }
     }
 
     @Transactional

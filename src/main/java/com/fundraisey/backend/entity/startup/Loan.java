@@ -50,14 +50,19 @@ public class Loan extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "total_return_period")
     private Integer totalReturnPeriod;
 
-    @JsonIgnore
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
 
+    @ManyToOne(targetEntity = PaymentPlan.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_payment_plan", referencedColumnName = "id")
+    private PaymentPlan paymentPlan;
+
+    @JsonIgnore
     @OneToOne(mappedBy = "loan")
     private Transaction transaction;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "loan")
     private List<LoanComment> loanComment;
 }

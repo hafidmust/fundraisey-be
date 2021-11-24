@@ -55,6 +55,7 @@ public class Startup extends DateProps implements Serializable {
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
     private List<Loan> loans;
 

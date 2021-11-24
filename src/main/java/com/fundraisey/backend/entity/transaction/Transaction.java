@@ -1,6 +1,7 @@
 package com.fundraisey.backend.entity.transaction;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
@@ -24,7 +25,7 @@ public class Transaction extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = Investor.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Investor.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "investor_id", referencedColumnName = "id")
     private Investor investor;
 
@@ -32,8 +33,9 @@ public class Transaction extends DateProps implements Serializable {
     @JoinColumn(name = "loan_id", referencedColumnName = "id")
     private Loan loan;
 
-    @OneToOne(targetEntity = PaymentAgent.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = PaymentAgent.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_agent_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private PaymentAgent paymentAgent;
 
     @Column(name = "amount")

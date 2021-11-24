@@ -36,7 +36,8 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
                 .authorizeRequests()
                 .antMatchers("/", "/v1/forgot-password**", "/v1/reset-password/**", "/v1/login**",
                         "/register**", "/api/user-register/web/index/**", "/error**", "/v1/register-admin**",
-                        "/v1/register-investor**", "/v1/user-register-confirm/**", "/v1/send-email**")
+                        "/v1/register-investor**", "/v1/user-register-confirm/**", "/v1/send-email**",
+                        "/v1/payment-agent**", "/v1/loan/all**", "/v1/loan/detail/**")
                 .permitAll()
                 .and()
                 .authorizeRequests()

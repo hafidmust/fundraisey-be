@@ -1,8 +1,8 @@
-package com.fundraisey.backend.service.implementation;
+package com.fundraisey.backend.service.implementation.auth;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.service.ResetPasswordService;
+import com.fundraisey.backend.service.interfaces.auth.ResetPasswordService;
 import com.fundraisey.backend.util.EmailSender;
 import com.fundraisey.backend.util.EmailTemplate;
 import com.fundraisey.backend.util.ResponseTemplate;

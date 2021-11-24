@@ -1,4 +1,4 @@
-package com.fundraisey.backend.repository;
+package com.fundraisey.backend.repository.investor;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
@@ -13,7 +13,7 @@ public interface InvestorRepository extends JpaRepository<Investor, Long> {
     Investor getById(@Param("id") Long id);
 
     @Query("SELECT u FROM Investor u WHERE u.user.id = :id")
-    Investor getByInvestorId(@Param("id") Long id);
+    Investor getByUserId(@Param("id") Long id);
 
     Investor findByUser(User user);
 }
