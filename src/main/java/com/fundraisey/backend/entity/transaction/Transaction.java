@@ -33,8 +33,9 @@ public class Transaction extends DateProps implements Serializable {
     @JoinColumn(name = "loan_id", referencedColumnName = "id")
     private Loan loan;
 
-    @OneToOne(targetEntity = PaymentAgent.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = PaymentAgent.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_agent_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private PaymentAgent paymentAgent;
 
     @Column(name = "amount")

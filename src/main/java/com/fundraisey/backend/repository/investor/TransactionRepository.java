@@ -23,4 +23,7 @@ public interface TransactionRepository extends PagingAndSortingRepository<Transa
     List<Transaction> getByInvestorId(@Param("id") Long id);
 
     Page<Transaction> findByInvestor(Investor investor, Pageable pageable);
+
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.transactionStatus = 'paid' AND t.loan.id = :id")
+    Long sumOfPaidTransactionByLoanId(@Param("id") Long id);
 }

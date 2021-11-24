@@ -74,16 +74,16 @@ public class TransactionImplementation implements TransactionService {
 
             Transaction savedTransaction = transactionRepository.save(transaction);
 
-            transaction = addPaymentInstallment(transaction);
+            addReturnInstallment(savedTransaction);
 
-            return responseTemplate.success(transaction);
+            return responseTemplate.success(transactionRepository.getById(savedTransaction.getId()));
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
         }
     }
 
-    private Transaction addPaymentInstallment(Transaction transaction) {
+    private void addReturnInstallment(Transaction transaction) {
         Integer totalReturnPeriod = transaction.getLoan().getTotalReturnPeriod();
         Float interestRate = transaction.getLoan().getInterestRate();
         Float amountReturned =
@@ -113,8 +113,6 @@ public class TransactionImplementation implements TransactionService {
 
             returnInstallmentRepository.save(returnInstallment);
         }
-
-        return transactionRepository.getById(transaction.getId());
     }
 
     @Override
