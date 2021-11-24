@@ -3,10 +3,12 @@ package com.fundraisey.backend.service.implementation.auth;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.RegisterModel;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.startup.StartupRepository;
 import com.fundraisey.backend.service.interfaces.auth.RegisterService;
 import com.fundraisey.backend.util.EmailSender;
 import com.fundraisey.backend.util.EmailTemplate;
@@ -26,6 +28,9 @@ public class RegisterImplementation implements RegisterService {
 
     @Autowired
     private InvestorRepository investorRepository;
+
+    @Autowired
+    private StartupRepository startupRepository;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -113,15 +118,10 @@ public class RegisterImplementation implements RegisterService {
 
             User newUser = userRepository.save(user);
 
-            Investor investor = new Investor();
-            investor.setUser(newUser);
-            investor.setCitizenID(registerModel.getCitizenID());
-            investor.setFullName(registerModel.getFullName());
-            investor.setPhoneNumber(registerModel.getPhoneNumber());
-            investor.setDateOfBirth(registerModel.getDateOfBirth());
-            investor.setGender(registerModel.getGender());
+            Startup startup = new Startup();
+            startup.setUser(newUser);
 
-            investorRepository.save(investor);
+            startupRepository.save(startup);
 
             return responseTemplate.success(null);
         } catch (Exception e) {
