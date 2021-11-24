@@ -5,9 +5,11 @@ import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Loan;
 import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
+import com.fundraisey.backend.model.LoanDetailModel;
 import com.fundraisey.backend.model.LoanRequestModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
 import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
@@ -20,10 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class LoanImplementation implements LoanService {
@@ -31,6 +30,8 @@ public class LoanImplementation implements LoanService {
     UserRepository userRepository;
     @Autowired
     LoanRepository loanRepository;
+    @Autowired
+    TransactionRepository transactionRepository;
     @Autowired
     StartupRepository startupRepository;
     @Autowired
@@ -69,9 +70,10 @@ public class LoanImplementation implements LoanService {
             loan.setInterestRate(loanRequestModel.getInterestRate());
             loan.setPaymentPlan(paymentPlan);
 
+            if (paymentPlan == null) return responseTemplate.notFound("Payment plan not found");
             if (paymentPlan.getName().equals("cash")) {
                 loan.setTotalReturnPeriod(1);
-            } else if (paymentPlan.getName().equals("1years") || paymentPlan.getName().equals("per1years")) {
+            } else if (paymentPlan.getName().equals("1year") || paymentPlan.getName().equals("per1year")) {
                 loan.setTotalReturnPeriod(2);
             } else if (paymentPlan.getName().equals("6months") || paymentPlan.getName().equals("per6months")) {
                 loan.setTotalReturnPeriod(4);
@@ -96,6 +98,7 @@ public class LoanImplementation implements LoanService {
         try {
             User user = userRepository.findOneByEmail(email);
             Startup startup = startupRepository.findByUser(user);
+            List<LoanDetailModel> response = new ArrayList<>();
 
             if ((sortType == "desc") || (sortType == "descending")) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
@@ -104,8 +107,13 @@ public class LoanImplementation implements LoanService {
             }
 
             loans = loanRepository.findByStartup(startup, pageable);
+            for (Loan loan : loans.getContent()) {
+                LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 
-            return responseTemplate.success(loans);
+                response.add(loanDetailModel);
+            }
+
+            return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
@@ -118,6 +126,8 @@ public class LoanImplementation implements LoanService {
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
         try {
+            List<LoanDetailModel> response = new ArrayList<>();
+
             if ((sortType == "desc") || (sortType == "descending")) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
@@ -125,8 +135,13 @@ public class LoanImplementation implements LoanService {
             }
 
             loans = loanRepository.findAll(pageable);
+            for (Loan loan : loans.getContent()) {
+                LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 
-            return responseTemplate.success(loans);
+                response.add(loanDetailModel);
+            }
+
+            return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
@@ -138,12 +153,30 @@ public class LoanImplementation implements LoanService {
         try {
             Loan loan = loanRepository.getById(id);
 
-            return responseTemplate.success(loan);
+            LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
+
+            return responseTemplate.success(loanDetailModel);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
         }
     }
 
+    private LoanDetailModel createLoanDetailModel(Loan loan) {
+        Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+        if (currentValue == null) currentValue = 0L;
 
+        LoanDetailModel loanDetailModel = new LoanDetailModel();
+        loanDetailModel.setId(loan.getId());
+        loanDetailModel.setName(loan.getName());
+        loanDetailModel.setDescription(loan.getDescription());
+        loanDetailModel.setStartDate(loan.getStartDate());
+        loanDetailModel.setEndDate(loan.getEndDate());
+        loanDetailModel.setTargetValue(loan.getTargetValue());
+        loanDetailModel.setCurrentValue(currentValue);
+        loanDetailModel.setInterestRate(loan.getInterestRate());
+        loanDetailModel.setStartup(loan.getStartup());
+
+        return loanDetailModel;
+    }
 }
