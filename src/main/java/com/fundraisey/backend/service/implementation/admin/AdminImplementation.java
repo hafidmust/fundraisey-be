@@ -21,7 +21,7 @@ public class AdminImplementation implements AdminService {
     LoanRepository loanRepository;
     @Autowired
     ResponseTemplate responseTemplate;
-
+    @Override
     public Map getAllUnacceptedLoan(Integer page, Integer size, String sortAttribute, String sortType) {
         Page<Loan> loans;
         Pageable pageable;
@@ -41,7 +41,7 @@ public class AdminImplementation implements AdminService {
             return responseTemplate.internalServerError(e);
         }
     }
-
+    @Override
     public Map getUnacceptedLoanById(Long id) {
         try {
             Loan loan = loanRepository.getById(id);
@@ -52,7 +52,7 @@ public class AdminImplementation implements AdminService {
             return responseTemplate.internalServerError(e);
         }
     }
-
+    @Override
     public Map acceptLoan(LoanStatusModel loanStatusModel) {
         try {
             Loan loan = loanRepository.getById(loanStatusModel.getLoanId());
@@ -66,7 +66,7 @@ public class AdminImplementation implements AdminService {
             return responseTemplate.internalServerError(e);
         }
     }
-
+    @Override
     public Map rejectLoan(LoanStatusModel loanStatusModel) {
         try {
             Loan loan = loanRepository.getById(loanStatusModel.getLoanId());
