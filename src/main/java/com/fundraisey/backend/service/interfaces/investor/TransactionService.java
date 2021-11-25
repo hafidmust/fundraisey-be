@@ -12,4 +12,5 @@ public interface TransactionService {
     Map getByUserId(Integer page, Integer size, String sortAttribute, String sortType, Long userId);
     Map getAll();
     Map getById(Long id);
+    Map pay(String email, TransactionRequestModel transactionRequestModel);
 }

@@ -29,7 +29,7 @@ public class Transaction extends DateProps implements Serializable {
     @JoinColumn(name = "investor_id", referencedColumnName = "id")
     private Investor investor;
 
-    @OneToOne(targetEntity = Loan.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Loan.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "loan_id", referencedColumnName = "id")
     private Loan loan;
 

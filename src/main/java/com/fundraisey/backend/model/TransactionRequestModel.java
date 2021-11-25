@@ -7,4 +7,5 @@ public class TransactionRequestModel {
     Long loanId;
     Long amount;
     Long paymentAgentId;
+    Long transactionId;
 }

@@ -2,16 +2,18 @@ package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
-import com.fundraisey.backend.entity.startup.Loan;
-import com.fundraisey.backend.entity.startup.LoanStatus;
-import com.fundraisey.backend.entity.startup.PaymentPlan;
-import com.fundraisey.backend.entity.startup.Startup;
+import com.fundraisey.backend.entity.startup.*;
+import com.fundraisey.backend.entity.transaction.ReturnInstallment;
+import com.fundraisey.backend.entity.transaction.ReturnStatus;
 import com.fundraisey.backend.model.LoanDetailModel;
 import com.fundraisey.backend.model.LoanRequestModel;
+import com.fundraisey.backend.model.StartupPaymentListModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
 import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
+import com.fundraisey.backend.repository.startup.PaymentInvoiceRepository;
 import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
 import com.fundraisey.backend.service.interfaces.startup.LoanService;
@@ -39,6 +41,10 @@ public class LoanImplementation implements LoanService {
     PaymentPlanRepository paymentPlanRepository;
     @Autowired
     ResponseTemplate responseTemplate;
+    @Autowired
+    ReturnInstallmentRepository returnInstallmentRepository;
+    @Autowired
+    PaymentInvoiceRepository paymentInvoiceRepository;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
@@ -155,6 +161,87 @@ public class LoanImplementation implements LoanService {
             LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 
             return responseTemplate.success(loanDetailModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map pay(String email, Long loanId, Integer period) {
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+            Loan loan = loanRepository.getById(loanId);
+
+            if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
+
+            List<ReturnInstallment> returnInstallments =
+                    returnInstallmentRepository.getAllByLoanIdAndPeriod(loanId, period);
+
+            for (ReturnInstallment returnInstallment : returnInstallments) {
+                if (returnInstallment.getReturnStatus() != ReturnStatus.paid) {
+                    // Create startup's payment invoice
+                    PaymentInvoice paymentInvoice = new PaymentInvoice();
+                    paymentInvoice.setPaymentDate(new Date());
+                    paymentInvoice.setReturnInstallment(returnInstallment);
+                    paymentInvoice.setAmount(returnInstallment.getAmount());
+                    paymentInvoiceRepository.save(paymentInvoice);
+
+                    // Change return installment status to paid
+                    returnInstallment.setReturnStatus(ReturnStatus.paid);
+                    returnInstallmentRepository.save(returnInstallment);
+                }
+            }
+
+            return responseTemplate.success(null);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getPaymentList(Long loanId) {
+        try {
+            Loan loan = loanRepository.getById(loanId);
+            Integer totalReturnPeriod = loan.getTotalReturnPeriod();
+            List<StartupPaymentListModel> paymentList = new ArrayList<>();
+
+            // Create payment date(s)
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(loan.getEndDate());
+            for (Integer period = 1; period <= totalReturnPeriod; period++) {
+                StartupPaymentListModel payment = new StartupPaymentListModel();
+                payment.setPeriod(period);
+                if (totalReturnPeriod == 1) {
+                    calendar.add(Calendar.YEAR, 2);
+                    payment.setReturnDate(calendar.getTime());
+                } else if (totalReturnPeriod == 2) {
+                    calendar.add(Calendar.YEAR, 1);
+                    payment.setReturnDate(calendar.getTime());
+                } else if (totalReturnPeriod == 4) {
+                    calendar.add(Calendar.MONTH, 6);
+                    payment.setReturnDate(calendar.getTime());
+                }
+
+                Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+
+                if (totalAmount == null) totalAmount = 0L;
+                payment.setTotalAmount(totalAmount);
+
+                ReturnInstallment returnInstallment =
+                        returnInstallmentRepository.findOneByTransactionAndReturnPeriod(loan.getTransactions().get(0)
+                                , period);
+                if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
+                    payment.setPaid(true);
+                } else {
+                    payment.setPaid(false);
+                }
+                paymentList.add(payment);
+            }
+
+            return responseTemplate.success(paymentList);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);

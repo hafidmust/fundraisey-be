@@ -74,9 +74,32 @@ public class TransactionImplementation implements TransactionService {
 
             Transaction savedTransaction = transactionRepository.save(transaction);
 
-            addReturnInstallment(savedTransaction);
+            // addReturnInstallment(savedTransaction);
 
             return responseTemplate.success(transactionRepository.getById(savedTransaction.getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map pay(String email, TransactionRequestModel transactionRequestModel) {
+        try {
+            User user = userRepository.findOneByEmail(email);
+            Investor investor = investorRepository.findByUser(user);
+            Transaction transaction = transactionRepository.getById(transactionRequestModel.getTransactionId());
+
+            if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
+                    "owner transaction");
+            if (investor == null) return responseTemplate.notFound("Investor not found");
+
+            addReturnInstallment(transaction);
+            transaction.setTransactionStatus(TransactionStatus.paid);
+
+            Transaction savedTransaction = transactionRepository.save(transaction);
+
+            return responseTemplate.success(savedTransaction);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);

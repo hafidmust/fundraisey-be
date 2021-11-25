@@ -63,8 +63,8 @@ public class Loan extends DateProps implements Serializable {
     private PaymentPlan paymentPlan;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "loan")
-    private Transaction transaction;
+    @OneToMany(mappedBy = "loan")
+    private List<Transaction> transactions;
 
     @JsonIgnore
     @OneToMany(mappedBy = "loan")
