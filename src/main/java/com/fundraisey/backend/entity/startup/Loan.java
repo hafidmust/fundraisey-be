@@ -50,6 +50,10 @@ public class Loan extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "total_return_period")
     private Integer totalReturnPeriod;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private LoanStatus status = LoanStatus.pending;
+
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;

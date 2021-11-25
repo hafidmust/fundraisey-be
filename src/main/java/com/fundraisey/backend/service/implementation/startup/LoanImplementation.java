@@ -3,6 +3,7 @@ package com.fundraisey.backend.service.implementation.startup;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Loan;
+import com.fundraisey.backend.entity.startup.LoanStatus;
 import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.LoanDetailModel;
@@ -56,9 +57,6 @@ public class LoanImplementation implements LoanService {
             Startup startup = startupRepository.findByUser(user);
             PaymentPlan paymentPlan = paymentPlanRepository.getById(loanRequestModel.getPaymentPlanId());
 
-            Calendar calendar = Calendar.getInstance();
-            Date startDate = calendar.getTime();
-
             Loan loan = new Loan();
 
             loan.setStartup(startup);
@@ -69,6 +67,7 @@ public class LoanImplementation implements LoanService {
             loan.setEndDate(loanRequestModel.getEndDate());
             loan.setInterestRate(loanRequestModel.getInterestRate());
             loan.setPaymentPlan(paymentPlan);
+            loan.setStatus(LoanStatus.pending);
 
             if (paymentPlan == null) return responseTemplate.notFound("Payment plan not found");
             if (paymentPlan.getName().equals("cash")) {
@@ -134,7 +133,7 @@ public class LoanImplementation implements LoanService {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            loans = loanRepository.findAll(pageable);
+            loans = loanRepository.findByStatus(LoanStatus.accepted, pageable);
             for (Loan loan : loans.getContent()) {
                 LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 

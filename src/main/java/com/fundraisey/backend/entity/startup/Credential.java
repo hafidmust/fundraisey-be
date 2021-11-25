@@ -21,6 +21,10 @@ public class Credential extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "credential_photo_url")
     private String credentialPhotoUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private LoanStatus status;
+
     @ManyToOne(targetEntity = Startup.class)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
