@@ -1,6 +1,7 @@
 package com.fundraisey.backend.entity.transaction;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.investor.BankAccount;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class ReturnInvoice implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @OneToOne(targetEntity = ReturnInstallment.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "return_installment_id", referencedColumnName = "id")
     private ReturnInstallment returnInstallment;

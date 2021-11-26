@@ -39,6 +39,9 @@ public class ReturnInstallment implements Serializable {
     @Column(name = "amount")
     private Long amount;
 
+    @Column(name = "is_withdrawn")
+    private boolean withdrawn = false;
+
     @Enumerated
     @Column(name = "return_status")
     private ReturnStatus returnStatus;
