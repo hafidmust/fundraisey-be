@@ -12,10 +12,7 @@ import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
 import com.fundraisey.backend.repository.investor.TransactionRepository;
-import com.fundraisey.backend.repository.startup.LoanRepository;
-import com.fundraisey.backend.repository.startup.PaymentInvoiceRepository;
-import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
-import com.fundraisey.backend.repository.startup.StartupRepository;
+import com.fundraisey.backend.repository.startup.*;
 import com.fundraisey.backend.service.interfaces.startup.LoanService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +42,8 @@ public class LoanImplementation implements LoanService {
     ReturnInstallmentRepository returnInstallmentRepository;
     @Autowired
     PaymentInvoiceRepository paymentInvoiceRepository;
+    @Autowired
+    WithdrawalInvoiceRepository withdrawalInvoiceRepository;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
@@ -233,15 +232,55 @@ public class LoanImplementation implements LoanService {
                 ReturnInstallment returnInstallment =
                         returnInstallmentRepository.findOneByTransactionAndReturnPeriod(loan.getTransactions().get(0)
                                 , period);
-                if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
-                    payment.setPaid(true);
-                } else {
+                if (returnInstallment == null) {
                     payment.setPaid(false);
+                } else {
+                    if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
+                        payment.setPaid(true);
+                    } else {
+                        payment.setPaid(false);
+                    }
                 }
                 paymentList.add(payment);
             }
 
             return responseTemplate.success(paymentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map withdraw(String email, Long loanId) {
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+            Loan loan = loanRepository.getById(loanId);
+            if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
+
+            Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loanId);
+            if (currentValue == null) return responseTemplate.notAllowed("Nothing to withdraw");
+
+            Date currentDate = new Date();
+            Integer isEnded = currentDate.compareTo(loan.getEndDate());
+            if ((currentValue < loan.getTargetValue()) && (isEnded <= 0)) {
+                return responseTemplate.notAllowed("Loan period not ended and target value not achieved");
+            }
+
+            WithdrawalInvoice withdrawalInvoice = withdrawalInvoiceRepository.findByLoan(loan);
+            if (withdrawalInvoice != null) return responseTemplate.notAllowed("Already withdrawn");
+
+            withdrawalInvoice = new WithdrawalInvoice();
+            withdrawalInvoice.setLoan(loan);
+            withdrawalInvoice.setPaymentDate(new Date());
+            withdrawalInvoice.setAmount(currentValue);
+
+            WithdrawalInvoice savedWithdrawalInvoice = withdrawalInvoiceRepository.save(withdrawalInvoice);
+            loan.setWithdrawn(true);
+
+
+            return responseTemplate.success(savedWithdrawalInvoice);
+
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);

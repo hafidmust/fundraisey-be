@@ -32,4 +32,11 @@ public class StartupLoanController {
 
         return responseTemplate.controllerHttpRestResponse(response);
     }
+
+    @PostMapping("/withdraw")
+    ResponseEntity<Map> withdraw(@RequestBody StartupLoanRequestModel startupLoanRequestModel, Principal principal) {
+        Map response = loanService.withdraw(principal.getName(), startupLoanRequestModel.getLoanId());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
 }
