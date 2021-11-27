@@ -2,6 +2,7 @@ package com.fundraisey.backend.controller.admin;
 
 import com.fundraisey.backend.entity.startup.CredentialStatus;
 import com.fundraisey.backend.model.CredentialStatusModel;
+import com.fundraisey.backend.model.InvestorVerificationModel;
 import com.fundraisey.backend.model.LoanStatusModel;
 import com.fundraisey.backend.service.interfaces.admin.AdminService;
 import com.fundraisey.backend.service.interfaces.startup.LoanService;
@@ -82,5 +83,39 @@ public class AdminController {
     @PostMapping("/credential/reject")
     ResponseEntity<Map> rejectCredential(@RequestBody CredentialStatusModel credentialStatusModel) {
         return null;
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/investor-verification/all")
+    ResponseEntity<Map> getAllUnacceptedInvestorVerification(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort-by", required = false) String sortAttribute,
+            @RequestParam(value = "sort-type", required = false) String sortType
+    ) {
+        page = (page == null) ? 0 : page;
+        size = (size == null) ? 20 : size;
+        sortAttribute = (sortAttribute == null) ? "" : sortAttribute;
+        sortType = (sortType == null) ? "" : sortType;
+
+        Map response = adminService.getAllUnacceptedInvestorVerification(page, size, sortAttribute, sortType);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/investor-verification/{investorId}")
+    ResponseEntity<Map> getInvestorVerification(@PathVariable Long investorId) {
+        Map response = adminService.getInvestorVerificationByInvestorId(investorId);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/investor-verification/accept")
+    ResponseEntity<Map> getInvestorVerification(@RequestBody InvestorVerificationModel investorVerificationModel) {
+        Map response = adminService.acceptInvestorVerification(investorVerificationModel);
+
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 }

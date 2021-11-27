@@ -15,7 +15,7 @@ public class InvestorVerification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(targetEntity = Investor.class, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = Investor.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "investor_id", referencedColumnName = "id")
     private Investor investor;
 

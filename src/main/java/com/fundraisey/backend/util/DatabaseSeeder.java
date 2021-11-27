@@ -5,6 +5,7 @@ import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.PaymentAgent;
@@ -14,6 +15,7 @@ import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
 import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
@@ -43,27 +45,22 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private ClientRepository clientRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RolePathRepository rolePathRepository;
-
     @Autowired
     private PaymentAgentRepository paymentAgentRepository;
-
     @Autowired
     private TransactionMethodRepository transactionMethodRepository;
-
     @Autowired
     private StartupRepository startupRepository;
-
     @Autowired
     private InvestorRepository investorRepository;
+    @Autowired
+    private InvestorVerificationRepository investorVerificationRepository;
 
     @Autowired
     private PaymentPlanRepository paymentPlanRepository;
@@ -138,7 +135,12 @@ public class DatabaseSeeder implements ApplicationRunner {
             investor.setFullName("Fundraisey Investor");
             investor.setUser(user);
 
-            investorRepository.save(investor);
+            Investor saved = investorRepository.save(investor);
+
+            InvestorVerification investorVerification = new InvestorVerification();
+            investorVerification.setInvestor(saved);
+            investorVerification.setVerified(true);
+            investorVerificationRepository.save(investorVerification);
         }
     }
 

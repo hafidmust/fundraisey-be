@@ -1,8 +1,11 @@
 package com.fundraisey.backend.service.implementation.admin;
 
+import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.Loan;
 import com.fundraisey.backend.entity.startup.LoanStatus;
+import com.fundraisey.backend.model.InvestorVerificationModel;
 import com.fundraisey.backend.model.LoanStatusModel;
+import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
 import com.fundraisey.backend.service.interfaces.admin.AdminService;
 import com.fundraisey.backend.util.ResponseTemplate;
@@ -20,7 +23,10 @@ public class AdminImplementation implements AdminService {
     @Autowired
     LoanRepository loanRepository;
     @Autowired
+    InvestorVerificationRepository investorVerificationRepository;
+    @Autowired
     ResponseTemplate responseTemplate;
+
     @Override
     public Map getAllUnacceptedLoan(Integer page, Integer size, String sortAttribute, String sortType) {
         Page<Loan> loans;
@@ -75,6 +81,54 @@ public class AdminImplementation implements AdminService {
             loan.setStatus(LoanStatus.rejected);
             loanRepository.save(loan);
             return responseTemplate.success(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getAllUnacceptedInvestorVerification(Integer page, Integer size, String sortAttribute, String sortType) {
+        Page<InvestorVerification> investorVerifications;
+        Pageable pageable;
+        sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
+        try {
+            if ((sortType == "desc") || (sortType == "descending")) {
+                pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
+            } else {
+                pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
+            }
+
+            investorVerifications = investorVerificationRepository.findByIsVerified(false, pageable);
+
+            return responseTemplate.success(investorVerifications);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getInvestorVerificationByInvestorId(Long investorId) {
+        try {
+            InvestorVerification investorVerification = investorVerificationRepository.getByInvestorId(investorId);
+
+            return responseTemplate.success(investorVerification);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map acceptInvestorVerification(InvestorVerificationModel investorVerificationModel) {
+        try {
+            InvestorVerification investorVerification =
+                    investorVerificationRepository.getByInvestorId(investorVerificationModel.getInvestorId());
+            investorVerification.setVerified(true);
+            InvestorVerification saved = investorVerificationRepository.save(investorVerification);
+
+            return responseTemplate.success(saved);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
