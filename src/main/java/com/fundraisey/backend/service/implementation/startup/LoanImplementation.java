@@ -174,22 +174,21 @@ public class LoanImplementation implements LoanService {
 
             if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
 
-            List<ReturnInstallment> returnInstallments =
-                    returnInstallmentRepository.getAllByLoanIdAndPeriod(loanId, period);
+            ReturnInstallment returnInstallment =
+                    returnInstallmentRepository.getByLoanIdAndPeriod(loanId, period);
+            if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
+                return responseTemplate.notAllowed("Already paid");
+            } else if (returnInstallment.getReturnStatus() != ReturnStatus.paid) {
+                // Create startup's payment invoice
+                PaymentInvoice paymentInvoice = new PaymentInvoice();
+                paymentInvoice.setPaymentDate(new Date());
+                paymentInvoice.setReturnInstallment(returnInstallment);
+                paymentInvoice.setAmount(returnInstallment.getAmount());
+                paymentInvoiceRepository.save(paymentInvoice);
 
-            for (ReturnInstallment returnInstallment : returnInstallments) {
-                if (returnInstallment.getReturnStatus() != ReturnStatus.paid) {
-                    // Create startup's payment invoice
-                    PaymentInvoice paymentInvoice = new PaymentInvoice();
-                    paymentInvoice.setPaymentDate(new Date());
-                    paymentInvoice.setReturnInstallment(returnInstallment);
-                    paymentInvoice.setAmount(returnInstallment.getAmount());
-                    paymentInvoiceRepository.save(paymentInvoice);
-
-                    // Change return installment status to paid
-                    returnInstallment.setReturnStatus(ReturnStatus.paid);
-                    returnInstallmentRepository.save(returnInstallment);
-                }
+                // Change return installment status to paid
+                returnInstallment.setReturnStatus(ReturnStatus.paid);
+                returnInstallmentRepository.save(returnInstallment);
             }
 
             return responseTemplate.success(null);

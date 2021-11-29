@@ -17,8 +17,10 @@ public interface ReturnInstallmentRepository extends PagingAndSortingRepository<
 
     ReturnInstallment findOneByTransactionAndReturnPeriod(Transaction transaction, Integer returnPeriod);
 
+    List<ReturnInstallment> findByTransactionOrderByIdAsc(Transaction transaction);
+
     @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId and r.returnPeriod = :period")
-    List<ReturnInstallment> getAllByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
+    ReturnInstallment getByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
 
     @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.investor.id = :investorId ORDER BY id ASC")
     List<ReturnInstallment> getByTransactionInvestorIdDesc(@Param("investorId") Long investorId);

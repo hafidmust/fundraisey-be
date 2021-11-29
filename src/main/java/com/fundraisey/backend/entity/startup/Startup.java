@@ -29,7 +29,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
-    @Column(length = 100, nullable = true, name = "description")
+    @Column(columnDefinition = "TEXT", nullable = true, name = "description")
     private String description;
 
     @Column(length = 100, nullable = true, name = "logo")
@@ -41,7 +41,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "web")
     private String web;
 
-    @Column(length = 100, nullable = true, name = "address")
+    @Column(columnDefinition = "TEXT", nullable = true, name = "address")
     private String address;
 
     @Column(length = 100, nullable = true, name = "born_date")

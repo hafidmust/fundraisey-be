@@ -4,15 +4,13 @@ import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Loan;
 import com.fundraisey.backend.entity.startup.Startup;
-import com.fundraisey.backend.entity.transaction.ReturnInstallment;
-import com.fundraisey.backend.entity.transaction.ReturnInvoice;
-import com.fundraisey.backend.entity.transaction.ReturnStatus;
-import com.fundraisey.backend.entity.transaction.Transaction;
+import com.fundraisey.backend.entity.transaction.*;
 import com.fundraisey.backend.model.PortofolioModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
 import com.fundraisey.backend.repository.investor.ReturnInvoiceRepository;
+import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
 import com.fundraisey.backend.service.interfaces.investor.ReturnInstallmentService;
@@ -36,6 +34,8 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
     @Autowired
     LoanRepository loanRepository;
     @Autowired
+    TransactionRepository transactionRepository;
+    @Autowired
     ReturnInvoiceRepository returnInvoiceRepository;
     @Autowired
     ResponseTemplate responseTemplate;
@@ -45,18 +45,29 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
         try {
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
-            List<ReturnInstallment> returnInstallments =
-                    returnInstallmentRepository.getByTransactionInvestorIdDesc(investor.getId());
+            List<Transaction> transactions = transactionRepository.getByInvestorId(investor.getId());
             List<PortofolioModel> portofolioModels = new ArrayList<>();
 
-            for (ReturnInstallment returnInstallment : returnInstallments) {
-                List<Transaction> transactions = new ArrayList<>();
-                transactions.add(returnInstallment.getTransaction());
+            for (Transaction transaction : transactions) {
+                if (transaction.getTransactionStatus() != TransactionStatus.paid) continue;
+                List<Transaction> loanTransaction = new ArrayList<>();
+                loanTransaction.add(transaction);
+                Loan loan = loanRepository.findByTransactionsIn(loanTransaction);
+                Startup startup = loan.getStartup();
 
-                Loan loan = loanRepository.findByTransactionsIn(transactions);
                 PortofolioModel portofolioModel = new PortofolioModel();
-                portofolioModel.setReturnInstallment(returnInstallment);
-                portofolioModel.setLoan(loan);
+                portofolioModel.setTransactionId(transaction.getId());
+                portofolioModel.setStartupId(startup.getId());
+                portofolioModel.setStartupName(startup.getName());
+                portofolioModel.setLoanId(loan.getId());
+                portofolioModel.setLoanName(loan.getName());
+                portofolioModel.setStartDate(loan.getStartDate());
+                portofolioModel.setEndDate(loan.getEndDate());
+                portofolioModel.setCurrentLoanValue(transactionRepository.sumOfPaidTransactionByLoanId(loan.getId()));
+                portofolioModel.setTargetLoanValue(loan.getTargetValue());
+                portofolioModel.setPaymentPlanId(loan.getPaymentPlan().getId());
+                portofolioModel.setPaymentPlanName(loan.getPaymentPlan().getName());
+                portofolioModel.setReturnInstallment(returnInstallmentRepository.findByTransactionOrderByIdAsc(transaction));
 
                 portofolioModels.add(portofolioModel);
             }
