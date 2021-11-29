@@ -6,6 +6,7 @@ import com.fundraisey.backend.entity.startup.Loan;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.*;
 import com.fundraisey.backend.model.PortofolioModel;
+import com.fundraisey.backend.model.PortofolioSummaryModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
@@ -18,10 +19,7 @@ import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReturnInstallmentImplementation implements ReturnInstallmentService {
@@ -73,6 +71,45 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
             }
 
             return responseTemplate.success(portofolioModels);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getPortofolioSummary(String email) {
+        try {
+            User user = userRepository.findOneByEmail(email);
+            Investor investor = investorRepository.findByUser(user);
+            PortofolioSummaryModel portofolioSummaryModel = new PortofolioSummaryModel();
+
+            Calendar calendar = Calendar.getInstance();
+
+            Long totalWithdrawn = returnInvoiceRepository.getAmountWithdrawnSumByInvestorId(investor.getId());
+            if (totalWithdrawn == null) totalWithdrawn = 0L;
+            Long totalWithdrawnThisMonth =
+                    returnInvoiceRepository.getAmountWithdrawnSumByYearAndMonth(investor.getId(),
+                            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+            if (totalWithdrawnThisMonth == null) totalWithdrawnThisMonth = 0L;
+            Long totalFunding = transactionRepository.sumOfPaidTransactionByInvestorId(investor.getId());
+            if (totalFunding == null) totalFunding = 0L;
+            Long totalReturn = returnInstallmentRepository.getAmountSumByInvestorId(investor.getId());
+            if (totalReturn == null) totalReturn = 0L;
+            Long upcomingReturn = returnInstallmentRepository.getAmountSumByReturnStatus(ReturnStatus.unpaid);
+            if (upcomingReturn == null) upcomingReturn = 0L;
+            Integer loanTransactionCount = transactionRepository.countOfPaidTransactionByInvestorId(investor.getId());
+            if (loanTransactionCount == null) loanTransactionCount = 0;
+
+            portofolioSummaryModel.setTotalWithdrawn(totalWithdrawn);
+            portofolioSummaryModel.setTotalWithdrawnThisMonth(totalWithdrawnThisMonth);
+            portofolioSummaryModel.setTotalFunding(totalFunding);
+            portofolioSummaryModel.setTotalReturn(totalReturn);
+            portofolioSummaryModel.setUpcomingReturn(upcomingReturn);
+            portofolioSummaryModel.setLoanTransactionCount(loanTransactionCount);
+
+            return responseTemplate.success(portofolioSummaryModel);
+
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
