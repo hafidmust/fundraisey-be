@@ -18,6 +18,12 @@ public class InvestorLoanController {
     @Autowired
     ResponseTemplate responseTemplate;
 
+    @GetMapping("/portofolio-summary")
+    ResponseEntity<Map> portofolioSummary(Principal principal) {
+        Map response = returnInstallmentService.getPortofolioSummary(principal.getName());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
     @GetMapping("/portofolio")
     ResponseEntity<Map> portofolio(Principal principal) {
         Map response = returnInstallmentService.getPortofolio(principal.getName());

@@ -1,6 +1,7 @@
 package com.fundraisey.backend.repository.investor;
 
 import com.fundraisey.backend.entity.transaction.ReturnInstallment;
+import com.fundraisey.backend.entity.transaction.ReturnStatus;
 import com.fundraisey.backend.entity.transaction.Transaction;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -19,6 +20,9 @@ public interface ReturnInstallmentRepository extends PagingAndSortingRepository<
 
     List<ReturnInstallment> findByTransactionOrderByIdAsc(Transaction transaction);
 
+    @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.transaction.investor.id = :investorId")
+    Long getAmountSumByInvestorId(@Param("investorId") Long investorId);
+
     @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId and r.returnPeriod = :period")
     ReturnInstallment getByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
 
@@ -27,4 +31,7 @@ public interface ReturnInstallmentRepository extends PagingAndSortingRepository<
 
     @Query("SELECT r FROM ReturnInstallment r WHERE r.id = :id")
     ReturnInstallment getById(@Param("id") Long id);
+
+    @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.returnStatus = :returnStatus")
+    Long getAmountSumByReturnStatus(ReturnStatus returnStatus);
 }
