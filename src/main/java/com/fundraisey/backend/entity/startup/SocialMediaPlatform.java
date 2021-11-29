@@ -1,6 +1,7 @@
 package com.fundraisey.backend.entity.startup;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +35,5 @@ public class SocialMediaPlatform extends DateProps implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "socialMediaPlatform", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<SocialMedia> socialMedia;
+    private List<SocialMedia> socialMedia;
 }

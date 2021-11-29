@@ -3,6 +3,7 @@ package com.fundraisey.backend.entity.startup;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
@@ -56,17 +57,22 @@ public class Startup extends DateProps implements Serializable {
     private User user;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Loan> loans;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<SocialMedia> socialMedias;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Product> products;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Credential> credentials;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<StartupNotification> startupNotifications ;
 }

@@ -31,7 +31,7 @@ public class ProductController {
 
     @Secured("ROLE_STARTUP")
     @PostMapping("/products/add")
-    ResponseEntity<Map> insertProduct(@Valid @RequestBody ProductModel productModel, Principal principal) {
+    ResponseEntity<Map> insert(@Valid @RequestBody ProductModel productModel, Principal principal) {
         Long id = (principal == null) ? null : userService.getUserById(principal);
 
         Map response = productService.insert(productModel, id);

@@ -1,5 +1,6 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
@@ -18,9 +19,9 @@ public class StartupNotification extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
-    @OneToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_startup", referencedColumnName = "id")
+    @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
+    @JsonBackReference
     private Startup startup;
 
     @Column(name = "message")

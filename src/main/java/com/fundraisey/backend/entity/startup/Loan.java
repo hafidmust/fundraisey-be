@@ -1,7 +1,9 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.transaction.Transaction;
 import lombok.Getter;
@@ -50,7 +52,7 @@ public class Loan extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "total_return_period")
     private Integer totalReturnPeriod;
 
-    @JsonIgnore
+    @JsonBackReference
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
@@ -59,5 +61,6 @@ public class Loan extends DateProps implements Serializable {
     private Transaction transaction;
 
     @OneToMany(mappedBy = "loan")
+    @JsonManagedReference
     private List<LoanComment> loanComment;
 }

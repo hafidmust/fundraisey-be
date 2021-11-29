@@ -19,7 +19,7 @@ public class StartupNotificationTypeController {
 
     ResponseTemplate responseTemplate = new ResponseTemplate();
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Map> getAll() {
         Map response = startupNotificationTypeService.getAll();
         return responseTemplate.controllerHttpRestResponse(response);

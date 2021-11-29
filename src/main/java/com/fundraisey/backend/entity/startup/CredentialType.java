@@ -1,5 +1,7 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ public class CredentialType extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "credentialType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Credential> credentials;
 }

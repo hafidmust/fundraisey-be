@@ -1,5 +1,6 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class LoanComment extends DateProps implements Serializable {
 
     @ManyToOne(targetEntity = Loan.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "loan_id", referencedColumnName = "id")
+    @JsonBackReference
     private Loan loan;
 
     @ManyToOne(targetEntity = User.class, cascade = CascadeType.ALL)

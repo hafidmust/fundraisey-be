@@ -44,7 +44,7 @@ public class SocialMediaPlatformImplementation implements SocialMediaPlatformSer
 
             return responseTemplate.success(socialMediaPlatform);
         } catch (Exception e) {
-            log.error("Failed to save new social media platform {}: {}", socialMediaPlatform.getName(), e.getMessage());
+            log.error("Failed to save new Social Media Platform {}: {}", socialMediaPlatform.getName(), e.getMessage());
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
 

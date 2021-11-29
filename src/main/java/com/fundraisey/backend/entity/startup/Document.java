@@ -1,5 +1,6 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name = "credential_type")
+@Table(name = "document")
 public class Document extends DateProps implements Serializable {
     @Id
     @Column(name = "id")
