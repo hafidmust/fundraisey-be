@@ -3,11 +3,13 @@ package com.fundraisey.backend.service.implementation.auth;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.RegisterModel;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
 import com.fundraisey.backend.service.interfaces.auth.RegisterService;
 import com.fundraisey.backend.util.EmailSender;
@@ -25,15 +27,14 @@ import java.util.*;
 public class RegisterImplementation implements RegisterService {
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private InvestorRepository investorRepository;
-
     @Autowired
     private StartupRepository startupRepository;
-
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private InvestorVerificationRepository investorVerificationRepository;
 
     @Autowired
     private PasswordEncoder encoder;
@@ -164,6 +165,11 @@ public class RegisterImplementation implements RegisterService {
             investor.setGender(registerModel.getGender());
 
             investorRepository.save(investor);
+
+            InvestorVerification investorVerification = new InvestorVerification();
+            investorVerification.setInvestor(investor);
+            investorVerification.setVerified(false);
+            investorVerificationRepository.save(investorVerification);
 
             return responseTemplate.success(null);
         } catch (Exception e) {

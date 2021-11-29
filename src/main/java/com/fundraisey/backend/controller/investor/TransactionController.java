@@ -26,6 +26,13 @@ public class TransactionController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
+    @PostMapping("/pay")
+    ResponseEntity<Map> pay(@RequestBody TransactionRequestModel transactionRequestModel, Principal principal) {
+        Map response = transactionService.pay(principal.getName(), transactionRequestModel);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
     @PutMapping("/update")
     ResponseEntity<Map> update() {
         return null;

@@ -1,7 +1,8 @@
-package com.fundraisey.backend.entity.transaction;
+package com.fundraisey.backend.entity.startup;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fundraisey.backend.entity.investor.BankAccount;
+import com.fundraisey.backend.entity.transaction.ReturnInstallment;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "payment_agent")
+@Table(name = "payment_invoice")
 public class PaymentInvoice implements Serializable {
     @Id
     @Column(name = "id")

@@ -1,10 +1,8 @@
 package com.fundraisey.backend.util;
 
-import com.fundraisey.backend.entity.auth.Client;
-import com.fundraisey.backend.entity.auth.Role;
-import com.fundraisey.backend.entity.auth.RolePath;
-import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.auth.*;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.PaymentAgent;
@@ -14,6 +12,7 @@ import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
 import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
@@ -29,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -43,27 +44,22 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private ClientRepository clientRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RolePathRepository rolePathRepository;
-
     @Autowired
     private PaymentAgentRepository paymentAgentRepository;
-
     @Autowired
     private TransactionMethodRepository transactionMethodRepository;
-
     @Autowired
     private StartupRepository startupRepository;
-
     @Autowired
     private InvestorRepository investorRepository;
+    @Autowired
+    private InvestorVerificationRepository investorVerificationRepository;
 
     @Autowired
     private PaymentPlanRepository paymentPlanRepository;
@@ -134,23 +130,51 @@ public class DatabaseSeeder implements ApplicationRunner {
         Investor investor = investorRepository.findByUser(user);
 
         if (investor == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 1990);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
             investor = new Investor();
             investor.setFullName("Fundraisey Investor");
+            investor.setPhoneNumber("081234567891");
+            investor.setCitizenID("12345678910");
+            investor.setDateOfBirth(dateRepresentation);
+            investor.setProfilePicture("https://via.placeholder.com/150/0000FF/808080?text=Investor");
+            investor.setGender(Gender.male);
             investor.setUser(user);
 
-            investorRepository.save(investor);
+            Investor saved = investorRepository.save(investor);
+
+            InvestorVerification investorVerification = new InvestorVerification();
+            investorVerification.setInvestor(saved);
+            investorVerification.setVerified(true);
+            investorVerificationRepository.save(investorVerification);
         }
     }
 
     @Transactional
     private void insertStartup() {
-        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        User user = userRepository.findOneByEmail("startup@fundraisey.com");
         Startup startup = startupRepository.findByUser(user);
 
         if (startup == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 2021);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
             startup = new Startup();
             startup.setName("Fundraisey");
             startup.setDescription("Fundraisey is a startup fundraiser platform.");
+            startup.setLogo("https://via.placeholder.com/150/0000FF/808080?text=FundRaisey");
+            startup.setAddress("Infini Space, Jl. Kabupaten, Nusupan, Trihanggo, Gamping, Sleman Regency, Special " +
+                    "Region of Yogyakarta 55291");
+            startup.setFoundedDate(dateRepresentation);
+            startup.setPhoneNumber("081234567890");
+            startup.setWeb("https://fundraisey.com");
             startup.setUser(user);
 
             startupRepository.save(startup);

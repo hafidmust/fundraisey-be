@@ -14,4 +14,7 @@ public interface StartupRepository extends PagingAndSortingRepository<Startup, L
     Startup getById(@Param("id") Long id);
 
     Startup findByUser(User user);
+
+    @Query("SELECT s FROM Startup s WHERE s.user.email = :email")
+    Startup getByUserEmail(@Param("email") String email);
 }

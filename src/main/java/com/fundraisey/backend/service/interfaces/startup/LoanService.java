@@ -9,4 +9,7 @@ public interface LoanService {
     Map getAllByEmail(Integer page, Integer size, String sortAttribute, String sortType, String email);
     Map getAll(Integer page, Integer size, String sortAttribute, String sortType);
     Map getById(Long id);
+    Map getPaymentList(Long loanId);
+    Map pay(String email, Long loanId, Integer period);
+    Map withdraw(String email, Long loanId);
 }
