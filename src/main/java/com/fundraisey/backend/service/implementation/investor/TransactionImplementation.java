@@ -3,6 +3,7 @@ package com.fundraisey.backend.service.implementation.investor;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Loan;
+import com.fundraisey.backend.entity.startup.LoanStatus;
 import com.fundraisey.backend.entity.transaction.*;
 import com.fundraisey.backend.model.TransactionRequestModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
@@ -59,7 +60,10 @@ public class TransactionImplementation implements TransactionService {
             Investor investor = investorRepository.findByUser(user);
             if (investor == null) return responseTemplate.notFound("Investor not found");
             Loan loan = loanRepository.getById(transactionRequestModel.getLoanId());
-            if (loan == null) return responseTemplate.notFound(("Loan not found"));
+            if (loan == null) return responseTemplate.notFound("Loan not found");
+            if (loan.getStatus() == LoanStatus.pending) return responseTemplate.notAllowed("Loan acceptance pending");
+            if (loan.getStatus() == LoanStatus.rejected) return responseTemplate.notAllowed("Loan acceptance rejected");
+            if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
             PaymentAgent paymentAgent = paymentAgentRepository.getById(transactionRequestModel.getPaymentAgentId());
             if (paymentAgent == null) return responseTemplate.notFound(("Payment agent not found"));
 
@@ -93,6 +97,7 @@ public class TransactionImplementation implements TransactionService {
             if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
                     "owner transaction");
             if (investor == null) return responseTemplate.notFound("Investor not found");
+            if (transaction.getTransactionStatus() == TransactionStatus.paid) return responseTemplate.notAllowed("Already paid");
 
             addReturnInstallment(transaction);
             transaction.setTransactionStatus(TransactionStatus.paid);
