@@ -1,9 +1,6 @@
 package com.fundraisey.backend.util;
 
-import com.fundraisey.backend.entity.auth.Client;
-import com.fundraisey.backend.entity.auth.Role;
-import com.fundraisey.backend.entity.auth.RolePath;
-import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.auth.*;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.PaymentPlan;
@@ -31,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -131,8 +130,19 @@ public class DatabaseSeeder implements ApplicationRunner {
         Investor investor = investorRepository.findByUser(user);
 
         if (investor == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 1990);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
             investor = new Investor();
             investor.setFullName("Fundraisey Investor");
+            investor.setPhoneNumber("081234567891");
+            investor.setCitizenID("12345678910");
+            investor.setDateOfBirth(dateRepresentation);
+            investor.setProfilePicture("https://via.placeholder.com/150/0000FF/808080?text=Investor");
+            investor.setGender(Gender.male);
             investor.setUser(user);
 
             Investor saved = investorRepository.save(investor);
@@ -146,13 +156,25 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     private void insertStartup() {
-        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        User user = userRepository.findOneByEmail("startup@fundraisey.com");
         Startup startup = startupRepository.findByUser(user);
 
         if (startup == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 2021);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
             startup = new Startup();
             startup.setName("Fundraisey");
             startup.setDescription("Fundraisey is a startup fundraiser platform.");
+            startup.setLogo("https://via.placeholder.com/150/0000FF/808080?text=FundRaisey");
+            startup.setAddress("Infini Space, Jl. Kabupaten, Nusupan, Trihanggo, Gamping, Sleman Regency, Special " +
+                    "Region of Yogyakarta 55291");
+            startup.setFoundedDate(dateRepresentation);
+            startup.setPhoneNumber("081234567890");
+            startup.setWeb("https://fundraisey.com");
             startup.setUser(user);
 
             startupRepository.save(startup);
