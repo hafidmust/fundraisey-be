@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface StartupNotificationRepository extends PagingAndSortingRepository<StartupNotification, Long> {
-    @Query("SELECT s FROM StartupNotification s WHERE s.startup.user.id = :user.id")
-    Page<StartupNotification> findByUser(User user, Pageable pageable);
+    @Query("SELECT s FROM StartupNotification s WHERE s.startup.user.id = :id AND s.deleted_at IS NULL")
+    Page<StartupNotification> findByUser(Long id, Pageable pageable);
 }

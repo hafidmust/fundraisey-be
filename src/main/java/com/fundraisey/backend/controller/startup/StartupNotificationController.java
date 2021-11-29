@@ -23,7 +23,7 @@ public class StartupNotificationController {
     ResponseTemplate responseTemplate = new ResponseTemplate();
 
     @Secured("ROLE_STARTUP")
-    @GetMapping("/")
+    @GetMapping("/all")
     ResponseEntity<Map> getAll (
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,

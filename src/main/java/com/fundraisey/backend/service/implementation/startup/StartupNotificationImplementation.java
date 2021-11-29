@@ -57,7 +57,7 @@ public class StartupNotificationImplementation implements StartupNotificationSer
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            startupNotifications = startupNotificationRepository.findByUser(user, pageable);
+            startupNotifications = startupNotificationRepository.findByUser(user.getId(), pageable);
 
             log.info("Get all startup notification success");
 
