@@ -1,5 +1,7 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,8 +30,14 @@ public class Product extends DateProps implements Serializable {
     private String description;
 
     @ManyToOne(targetEntity = Startup.class)
+<<<<<<< Updated upstream
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup productStartup;
+=======
+    @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
+    @JsonBackReference
+    private Startup startup;
+>>>>>>> Stashed changes
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<ProductPhoto> productPhotos;

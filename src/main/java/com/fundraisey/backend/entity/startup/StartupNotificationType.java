@@ -13,8 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "credential_type")
-public class CredentialType extends DateProps implements Serializable {
+@Table(name = "startup_notification_type")
+public class StartupNotificationType extends DateProps implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,6 @@ public class CredentialType extends DateProps implements Serializable {
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "credentialType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Credential> credentials;
+    @OneToMany(mappedBy = "startupNotificationType", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<StartupNotification> startupNotifications;
 }

@@ -2,6 +2,7 @@ package com.fundraisey.backend.entity.startup;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
@@ -54,6 +55,7 @@ public class Startup extends DateProps implements Serializable {
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
+<<<<<<< Updated upstream
     @OneToMany(mappedBy = "socialMediaStartup", cascade = CascadeType.ALL)
     private List<SocialMedia> socialMedias;
 
@@ -65,4 +67,25 @@ public class Startup extends DateProps implements Serializable {
 
     @OneToMany(mappedBy = "credentialStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Credential> credentials;
+=======
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Loan> loans;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<SocialMedia> socialMedias;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Credential> credentials;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<StartupNotification> startupNotifications ;
+>>>>>>> Stashed changes
 }

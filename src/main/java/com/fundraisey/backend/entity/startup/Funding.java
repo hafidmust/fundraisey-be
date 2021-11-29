@@ -1,7 +1,9 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -59,7 +61,21 @@ public class Funding extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "total_return_period")
     private int totalReturnPeriod;
 
+<<<<<<< Updated upstream:src/main/java/com/fundraisey/backend/entity/startup/Funding.java
     @ManyToOne(targetEntity = Startup.class)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup fundingStartup;
+=======
+    @JsonBackReference
+    @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_startup", referencedColumnName = "id")
+    private Startup startup;
+
+    @OneToOne(mappedBy = "loan")
+    private Transaction transaction;
+
+    @OneToMany(mappedBy = "loan")
+    @JsonManagedReference
+    private List<LoanComment> loanComment;
+>>>>>>> Stashed changes:src/main/java/com/fundraisey/backend/entity/startup/Loan.java
 }
