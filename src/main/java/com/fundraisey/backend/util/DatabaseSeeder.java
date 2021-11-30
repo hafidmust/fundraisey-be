@@ -4,10 +4,14 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.startup.CredentialType;
+import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.startup.CredentialTypeRepository;
+import com.fundraisey.backend.repository.startup.SocialMediaPlatformRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,12 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private RolePathRepository rolePathRepository;
 
+    @Autowired
+    private CredentialTypeRepository credentialTypeRepository;
+
+    @Autowired
+    private SocialMediaPlatformRepository socialMediaPlatformRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -66,6 +76,17 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
+    private String[] credentialTypes = new String[] {
+            "License",
+            "Certificate"
+    };
+
+    private String[] socialMediaPlatforms = new String[] {
+            "Instagram:https://www.instagram.com",
+            "Linkedin:https://www.linkedin.com",
+            "Youtube:https://www.youtube.com"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -74,7 +95,35 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
+        this.insertCredentialTypes();
+        this.insertSocialMediaPlatforms();
     }
+
+    @Transactional
+    private void insertCredentialTypes() {
+        for (String ct: credentialTypes) {
+            CredentialType credentialType = new CredentialType();
+            credentialType.setName(ct);
+            credentialTypeRepository.save(credentialType);
+        }
+    }
+
+    @Transactional
+    private void insertSocialMediaPlatforms() {
+        for (String scp: socialMediaPlatforms) {
+            String[] str = scp.split(":");
+            String nameSCP = str[0];
+            String urlSCP = str[1];
+
+            SocialMediaPlatform socialMediaPlatform = new SocialMediaPlatform();
+
+            socialMediaPlatform.setName(nameSCP);
+            socialMediaPlatform.setWebsite(urlSCP);
+
+            socialMediaPlatformRepository.save(socialMediaPlatform);
+        }
+    }
+
 
     @Transactional
     private void insertRoles() {
