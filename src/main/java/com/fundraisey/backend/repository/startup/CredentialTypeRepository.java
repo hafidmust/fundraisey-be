@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface CredentialTypeRepository extends JpaRepository<CredentialType, Long> {
-    @Query("SELECT c FROM CredentialTypeRepository c WHERE id = :id")
+    @Query("SELECT c FROM CredentialType c WHERE id = :id")
     CredentialType getById(@Param("id") Long id);
 }

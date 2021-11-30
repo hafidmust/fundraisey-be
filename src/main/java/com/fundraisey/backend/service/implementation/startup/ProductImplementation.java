@@ -1,6 +1,8 @@
 package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.startup.Product;
+import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.startup.ProductModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.ProductPhotoRepository;
@@ -45,9 +47,19 @@ public class ProductImplementation implements ProductService {
 
             if (user == null) return responseTemplate.notFound("Email Not Found");
 
-            return responseTemplate.success("");
+            Product product = new Product();
+
+            Startup startup = startupRepository.getStartupProfileById(user.getId());
+
+            product.setStartup(startup);
+            product.setName(productModel.getName());
+            product.setDescription(productModel.getDescription());
+
+            productRepository.save(product);
+
+            return responseTemplate.success(product);
         } catch(Exception e) {
-            log.error("Failed to save new product with id {}: {}", id, e.getMessage());
+            e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
     }
