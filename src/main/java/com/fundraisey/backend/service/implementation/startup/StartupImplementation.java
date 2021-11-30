@@ -57,28 +57,24 @@ public class StartupImplementation implements StartupService {
     ResponseTemplate responseTemplate = new ResponseTemplate();
 
     @Override
-    public Map getByUserId(Integer page, Integer size, String sortAttribute, String sortType, Principal principal) {
+    public Map getAll(Integer page, Integer size, String sortAttribute, String sortType) {
         Page<Startup> startups;
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
         try {
-            User user = userRepository.findOneByEmail(principal.getName());
-
-            if (user == null) return responseTemplate.notFound("Email not found");
-
             if ((sortType == "desc") || (sortType == "descending")) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            startups = startupRepository.findByUser(user, pageable);
+            startups = startupRepository.findAll(pageable);
 
             log.info("Get all startup success");
 
             return responseTemplate.success(startups);
         } catch (Exception e) {
-            log.error("Failed to get all startup by user name {}: {}", principal.getName(), e.getMessage());
+            e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
     }
@@ -100,28 +96,19 @@ public class StartupImplementation implements StartupService {
     }
 
     @Override
-    public Map insert(StartupModel startupModel, Long id) {
+    public Map insert(StartupModel startupModel, String email) {
         try {
-            boolean userIsExist = userRepository.existsById(id);
+            User user = userRepository.findOneByEmail(email);
 
-            if (!userIsExist) {
+            if (user == null) {
                 return responseTemplate.notFound("User not found!");
             }
-
-//            Startup startupExist = startupRepository.findOneByName(startupModel.getName());
-//
-//            if (startupExist != null) {
-//                return responseTemplate.alreadyExist("Startup already registered!");
-//            }
-
-            User user = userRepository.getById(id);
 
             Startup startup = new Startup();
 
             startup.setUser(user);
             startup.setName(startupModel.getName());
             startup.setDescription(startupModel.getDescription());
-            startup.setLogo(startupModel.getLogo());
             startup.setPhoneNumber(startupModel.getPhoneNumber());
             startup.setWeb(startupModel.getWeb());
             startup.setAddress(startupModel.getAddress());
@@ -176,27 +163,26 @@ public class StartupImplementation implements StartupService {
 
             return responseTemplate.success(startup);
         } catch (Exception e) {
-            log.error("Failed to save new startup {}: {}", startupModel.getName(), e.getMessage());
+            e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
     }
 
     @Override
-    public Map update(StartupModel startupModel, Long id) {
+    public Map update(StartupModel startupModel, String email) {
         try {
-            boolean userIsExist = userRepository.existsById(id);
+            User user = userRepository.findOneByEmail(email);
 
-            if (!userIsExist) {
+            if (user == null) {
                 return responseTemplate.notFound("User not found!");
             }
 
-            Startup startupExist = startupRepository.getStartupProfileById(startupModel.getId());
+            Startup startupExist = startupRepository.findByUser(user);
 
             if (startupExist == null) return responseTemplate.notFound("Startup not found!");
 
             startupExist.setName(startupModel.getName());
             startupExist.setDescription(startupModel.getDescription());
-            startupExist.setLogo(startupModel.getLogo());
             startupExist.setPhoneNumber(startupModel.getPhoneNumber());
             startupExist.setWeb(startupModel.getWeb());
             startupExist.setAddress(startupModel.getAddress());
@@ -254,17 +240,17 @@ public class StartupImplementation implements StartupService {
             return responseTemplate.success("Startup is updated!");
 
         } catch (Exception e) {
-            log.error("Failed to update startup {}: {}", startupModel.getName(), e.getMessage());
+            e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
     }
 
     @Override
-    public Map delete(Long startupId, Long userId) {
+    public Map delete(Long startupId, String email) {
         try {
-            boolean userIsExist = userRepository.existsById(userId);
+            User user = userRepository.findOneByEmail(email);
 
-            if (!userIsExist) {
+            if (user == null) {
                 return responseTemplate.notFound("User not found!");
             }
 

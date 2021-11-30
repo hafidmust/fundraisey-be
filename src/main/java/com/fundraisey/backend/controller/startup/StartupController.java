@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/users")
+@RequestMapping("/v1/user/startup")
 public class StartupController {
     @Autowired
     UserService userService;
@@ -24,56 +24,60 @@ public class StartupController {
 
     ResponseTemplate responseTemplate = new ResponseTemplate();
 
-    @Secured({"ROLE_STARTUP", "ROLE_ADMIN"})
-    @GetMapping("/startup")
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/all")
     ResponseEntity<Map> getAll(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "sort-by", required = false) String sortAttribute,
-            @RequestParam(value = "sort-type", required = false) String sortType,
-            @RequestParam(required = false) Long userId,
-            Principal principal
+            @RequestParam(value = "sort-type", required = false) String sortType
     ) {
         page = (page == null) ? 0 : page;
         size = (size == null) ? 20 : size;
         sortAttribute = (sortAttribute == null) ? "" : sortAttribute;
         sortType = (sortType == null) ? "" : sortType;
 
-        Map response = startupService.getByUserId(page, size, sortAttribute, sortType, principal);
+        Map response = startupService.getAll(page, size, sortAttribute, sortType);
 
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_STARTUP")
-    @PostMapping(value = "/startup")
+    @PostMapping(value = "/create")
     ResponseEntity<Map> insert(@Valid @RequestBody StartupModel startupModel, Principal principal) {
         Long id = (principal == null) ? null : userService.getUserById(principal);
-        Map response = startupService.insert(startupModel, id);
+        Map response = startupService.insert(startupModel, principal.getName());
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_STARTUP")
-    @PutMapping("/startup/update")
-    ResponseEntity<Map> update(@Valid @RequestBody StartupModel startupModel, Principal principal) {
+    @PutMapping("/update")
+    ResponseEntity<Map> update(@RequestBody StartupModel startupModel, Principal principal) {
         Long id = (principal == null) ? null : userService.getUserById(principal);
-        Map response = startupService.update(startupModel, id);
+        Map response = startupService.update(startupModel, principal.getName());
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_STARTUP")
-    @GetMapping("/startup/detail")
+    @GetMapping("/detail")
     ResponseEntity<Map> getStartupProfile(Principal principal) {
         Long id = (principal == null) ? null : userService.getUserById(principal);
         Map response = startupService.getStartupById(id);
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
-    @Secured({"ROLE_STARTUP"})
-    @DeleteMapping("/startup/delete/{id}")
-    public ResponseEntity<Map> delete(@PathVariable(value = "id") Long id, Principal principal) {
-        Long userId = (principal == null) ? null : userService.getUserById(principal);
-        Map response = startupService.delete(id, userId);
-        return responseTemplate.controllerHttpRestResponse(response);
+    @Secured("ROLE_STARTUP")
+    @GetMapping("/upload/logo")
+    ResponseEntity<Map> uploadLogo(Principal principal) {
+        return null;
     }
+
+//    @Secured({"ROLE_STARTUP"})
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Map> delete(@PathVariable(value = "id") Long id, Principal principal) {
+//        Long userId = (principal == null) ? null : userService.getUserById(principal);
+//        Map response = startupService.delete(id, userId);
+//        return responseTemplate.controllerHttpRestResponse(response);
+//    }
 
 }

@@ -7,8 +7,8 @@ import java.util.Map;
 
 public interface StartupService {
     Map getStartupById(Long id);
-    Map getByUserId(Integer page, Integer size, String sortAttribute, String sortType, Principal principal);
-    Map insert(StartupModel startupModel, Long id);
-    Map update(StartupModel startupModel, Long id);
-    Map delete(Long startupId, Long userId);
+    Map getAll(Integer page, Integer size, String sortAttribute, String sortType);
+    Map insert(StartupModel startupModel, String email);
+    Map update(StartupModel startupModel, String email);
+    Map delete(Long startupId, String email);
 }

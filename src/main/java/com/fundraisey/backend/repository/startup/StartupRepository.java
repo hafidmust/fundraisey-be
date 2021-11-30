@@ -34,5 +34,5 @@ public interface StartupRepository extends PagingAndSortingRepository<Startup, L
 
     Startup findOneByName(String name);
 
-    Page<Startup> findByUser(User user, Pageable pageable);
+    Page<Startup> findAll(Pageable pageable);
 }

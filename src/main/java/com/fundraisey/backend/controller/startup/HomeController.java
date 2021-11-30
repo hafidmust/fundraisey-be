@@ -21,7 +21,7 @@ public class HomeController {
     @Secured("ROLE_STARTUP")
     @GetMapping("/index")
     ResponseEntity<Map> getStartupById(Principal principal) {
-        Map response = homeService.getProductsById(principal);
+        Map response = homeService.getIndexData(principal.getName());
 
         return responseTemplate.controllerHttpRestResponse(response);
     }

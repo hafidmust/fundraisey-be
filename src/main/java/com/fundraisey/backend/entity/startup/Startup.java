@@ -48,7 +48,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "born_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date foundedDate;
 
     @JsonIgnore
