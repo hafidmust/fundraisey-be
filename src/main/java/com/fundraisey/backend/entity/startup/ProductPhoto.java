@@ -1,5 +1,6 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,11 @@
 package com.fundraisey.backend.util;
 
+import com.fundraisey.backend.entity.auth.Client;
+import com.fundraisey.backend.entity.auth.Role;
+import com.fundraisey.backend.entity.auth.RolePath;
+import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.startup.CredentialType;
+import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
 import com.fundraisey.backend.entity.auth.*;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
@@ -11,6 +17,8 @@ import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
+import com.fundraisey.backend.repository.startup.CredentialTypeRepository;
+import com.fundraisey.backend.repository.startup.SocialMediaPlatformRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
@@ -64,6 +72,12 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Autowired
     private PaymentPlanRepository paymentPlanRepository;
 
+    @Autowired
+    private CredentialTypeRepository credentialTypeRepository;
+
+    @Autowired
+    private SocialMediaPlatformRepository socialMediaPlatformRepository;
+
     private String defaultPassword = "password";
 
     private String[] users = new String[]{
@@ -87,6 +101,17 @@ public class DatabaseSeeder implements ApplicationRunner {
             "ROLE_WRITE:oauth_role:^/.*:GET|PUT|POST|PATCH|DELETE|OPTIONS"
     };
 
+    private String[] credentialTypes = new String[] {
+            "License",
+            "Certificate"
+    };
+
+    private String[] socialMediaPlatforms = new String[] {
+            "Instagram:https://www.instagram.com",
+            "Linkedin:https://www.linkedin.com",
+            "Youtube:https://www.youtube.com"
+    };
+
     private String[] paymentAgents = new String[] {
             "Bank:BCA",
             "Bank:Mandiri",
@@ -108,6 +133,8 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertRoles();
         this.insertClients(password);
         this.insertUser(password);
+        this.insertCredentialTypes();
+        this.insertSocialMediaPlatforms();
         this.insertPaymentAgents();
         this.insertInvestor();
         this.insertStartup();
@@ -204,6 +231,32 @@ public class DatabaseSeeder implements ApplicationRunner {
             }
         }
     }
+
+    @Transactional
+    private void insertCredentialTypes() {
+        for (String ct: credentialTypes) {
+            CredentialType credentialType = new CredentialType();
+            credentialType.setName(ct);
+            credentialTypeRepository.save(credentialType);
+        }
+    }
+
+    @Transactional
+    private void insertSocialMediaPlatforms() {
+        for (String scp: socialMediaPlatforms) {
+            String[] str = scp.split(":");
+            String nameSCP = str[0];
+            String urlSCP = str[1];
+
+            SocialMediaPlatform socialMediaPlatform = new SocialMediaPlatform();
+
+            socialMediaPlatform.setName(nameSCP);
+            socialMediaPlatform.setWebsite(urlSCP);
+
+            socialMediaPlatformRepository.save(socialMediaPlatform);
+        }
+    }
+
 
     @Transactional
     private void insertRoles() {

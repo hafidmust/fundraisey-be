@@ -192,7 +192,6 @@ public class User extends DateProps implements UserDetails, Serializable {
         this.otpExpiredDate = otpExpiredDate;
     }
 
-    @JsonIgnore
     @OneToOne(mappedBy = "user")
     private Investor investor;
 

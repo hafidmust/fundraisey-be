@@ -1,5 +1,7 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +30,8 @@ public class Product extends DateProps implements Serializable {
     private String description;
 
     @ManyToOne(targetEntity = Startup.class)
-    @JoinColumn(name = "id_startup", referencedColumnName = "id")
+    @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
+    @JsonBackReference
     private Startup startup;
 
     @OneToMany(mappedBy = "product")

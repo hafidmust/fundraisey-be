@@ -2,6 +2,7 @@ package com.fundraisey.backend.service.interfaces;
 
 import com.fundraisey.backend.model.UserModel;
 
+import java.security.Principal;
 import java.util.Map;
 
 public interface UserService {
@@ -10,4 +11,5 @@ public interface UserService {
     Map getByEmail(String email);
     Map update(UserModel userModel);
     Map updateWithEmail(UserModel userModel);
+    Long getUserById(Principal principal);
 }
