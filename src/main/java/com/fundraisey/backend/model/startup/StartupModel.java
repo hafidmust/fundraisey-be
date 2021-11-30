@@ -13,7 +13,6 @@ public class StartupModel {
     private Long id;
     private String name;
     private String description;
-    private String logo;
     private String phoneNumber;
     private String web;
     private String address;
