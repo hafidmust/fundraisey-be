@@ -22,8 +22,11 @@ public class Credential extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = true, name = "credential_photo_url")
-    private String credentialPhotoUrl;
+    @Column(length = 100, nullable = true, name = "credential_url")
+    private String credentialUrl;
+
+    @Column(length = 100, nullable = true, name = "credential_id")
+    private String credentialId;
 
     @Column(length = 100, nullable = true, name = "name")
     private String name;
@@ -31,8 +34,8 @@ public class Credential extends DateProps implements Serializable {
     @Column(length = 200, nullable = true, name = "description")
     private String description;
 
-    @Column(length = 100, nullable = true, name = "issue")
-    private String issue;
+    @Column(length = 100, nullable = true, name = "issuing_organization")
+    private String issuingOrganization;
 
     @Column(length = 100, nullable = true, name = "issue_date")
     @Temporal(TemporalType.DATE)
@@ -45,9 +48,6 @@ public class Credential extends DateProps implements Serializable {
     @JsonFormat(pattern="dd-MM-yyyy")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expirationDate;
-
-    @Column(name = "credential_expired")
-    private Boolean credentialExpired;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "status")
