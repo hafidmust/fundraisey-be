@@ -47,7 +47,17 @@ public class ProductImplementation implements ProductService {
 
             if (user == null) return responseTemplate.notFound("Email Not Found");
 
-            return responseTemplate.success("");
+            Product product = new Product();
+
+            Startup startup = startupRepository.getStartupProfileById(user.getId());
+
+            product.setStartup(startup);
+            product.setName(productModel.getName());
+            product.setDescription(productModel.getDescription());
+
+            productRepository.save(product);
+
+            return responseTemplate.success(product);
         } catch(Exception e) {
             log.error("Failed to save new product with id {}: {}", id, e.getMessage());
             return responseTemplate.internalServerError(e.getLocalizedMessage());
