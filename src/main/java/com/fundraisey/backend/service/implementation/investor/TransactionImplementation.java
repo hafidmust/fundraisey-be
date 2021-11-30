@@ -52,6 +52,8 @@ public class TransactionImplementation implements TransactionService {
     @Override
     public Map insert(String email, TransactionRequestModel transactionRequestModel) {
         try {
+            if (transactionRequestModel.getAmount() <= 0) return responseTemplate.notAllowed("Transaction amount " +
+                    "can't be 0 or less");
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, 5);
             Date paymentDeadline = calendar.getTime();
@@ -66,6 +68,9 @@ public class TransactionImplementation implements TransactionService {
             if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
             PaymentAgent paymentAgent = paymentAgentRepository.getById(transactionRequestModel.getPaymentAgentId());
             if (paymentAgent == null) return responseTemplate.notFound(("Payment agent not found"));
+            if ((transactionRequestModel.getAmount() +
+                    transactionRepository.sumOfPaidTransactionByLoanId(loan.getId())) > loan.getTargetValue())
+                return responseTemplate.notAllowed("Total of current loan value and transaction amount exceed the target value");
 
             Transaction transaction = new Transaction();
             transaction.setInvestor(investor);
@@ -77,8 +82,6 @@ public class TransactionImplementation implements TransactionService {
             transaction.setPaymentDeadline(paymentDeadline);
 
             Transaction savedTransaction = transactionRepository.save(transaction);
-
-            // addReturnInstallment(savedTransaction);
 
             return responseTemplate.success(transactionRepository.getById(savedTransaction.getId()));
         } catch (Exception e) {
