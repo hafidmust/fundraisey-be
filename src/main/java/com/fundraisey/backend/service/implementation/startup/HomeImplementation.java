@@ -4,7 +4,7 @@ import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.HomeRepository;
-import com.fundraisey.backend.service.startup.HomeService;
+import com.fundraisey.backend.service.interfaces.startup.HomeService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

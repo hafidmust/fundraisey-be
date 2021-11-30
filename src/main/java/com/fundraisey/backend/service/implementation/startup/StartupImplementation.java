@@ -6,7 +6,7 @@ import com.fundraisey.backend.model.startup.StartupModel;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.*;
-import com.fundraisey.backend.service.startup.StartupService;
+import com.fundraisey.backend.service.interfaces.startup.StartupService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.rest.core.event.ExceptionEvent;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

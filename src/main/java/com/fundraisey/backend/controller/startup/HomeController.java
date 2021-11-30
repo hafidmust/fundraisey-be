@@ -1,7 +1,6 @@
 package com.fundraisey.backend.controller.startup;
 
-import com.fundraisey.backend.service.UserService;
-import com.fundraisey.backend.service.startup.HomeService;
+import com.fundraisey.backend.service.interfaces.startup.HomeService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

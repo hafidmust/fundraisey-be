@@ -52,15 +52,31 @@ public class Loan extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "total_return_period")
     private Integer totalReturnPeriod;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private LoanStatus status = LoanStatus.pending;
+
+    @Column(name = "is_withdrawn")
+    private boolean withdrawn = false;
+
     @JsonBackReference
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
 
-    @OneToOne(mappedBy = "loan")
-    private Transaction transaction;
+    @ManyToOne(targetEntity = PaymentPlan.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_payment_plan", referencedColumnName = "id")
+    private PaymentPlan paymentPlan;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "loan")
+    private List<Transaction> transactions;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "loan")
     @JsonManagedReference
     private List<LoanComment> loanComment;
+
+    @OneToOne(mappedBy = "loan")
+    private WithdrawalInvoice withdrawalInvoice;
 }

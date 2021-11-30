@@ -6,12 +6,25 @@ import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.startup.CredentialType;
 import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
+import com.fundraisey.backend.entity.auth.*;
+import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.investor.InvestorVerification;
+import com.fundraisey.backend.entity.startup.PaymentPlan;
+import com.fundraisey.backend.entity.startup.Startup;
+import com.fundraisey.backend.entity.transaction.PaymentAgent;
+import com.fundraisey.backend.entity.transaction.TransactionMethod;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.CredentialTypeRepository;
 import com.fundraisey.backend.repository.startup.SocialMediaPlatformRepository;
+import com.fundraisey.backend.repository.investor.InvestorRepository;
+import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
+import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
+import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
+import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
+import com.fundraisey.backend.repository.startup.StartupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +36,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -37,15 +52,25 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private ClientRepository clientRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RolePathRepository rolePathRepository;
+    @Autowired
+    private PaymentAgentRepository paymentAgentRepository;
+    @Autowired
+    private TransactionMethodRepository transactionMethodRepository;
+    @Autowired
+    private StartupRepository startupRepository;
+    @Autowired
+    private InvestorRepository investorRepository;
+    @Autowired
+    private InvestorVerificationRepository investorVerificationRepository;
+
+    @Autowired
+    private PaymentPlanRepository paymentPlanRepository;
 
     @Autowired
     private CredentialTypeRepository credentialTypeRepository;
@@ -57,7 +82,7 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     private String[] users = new String[]{
             "admin@fundraisey.com:ROLE_ADMIN",
-            "user@fundraisey.com:ROLE_INVESTOR ROLE_STARTUP",
+            // "user@fundraisey.com:ROLE_INVESTOR ROLE_STARTUP",
             "investor@fundraisey.com:ROLE_INVESTOR",
             "startup@fundraisey.com:ROLE_STARTUP"
     };
@@ -87,6 +112,19 @@ public class DatabaseSeeder implements ApplicationRunner {
             "Youtube:https://www.youtube.com"
     };
 
+    private String[] paymentAgents = new String[] {
+            "Bank:BCA",
+            "Bank:Mandiri",
+            "E-Wallet:Gopay",
+            "E-Wallet:OVO"
+    };
+
+    private String[] paymentPlans = new String[] {
+            "cash",
+            "per1year",
+            "per6months"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -97,6 +135,101 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertUser(password);
         this.insertCredentialTypes();
         this.insertSocialMediaPlatforms();
+        this.insertPaymentAgents();
+        this.insertInvestor();
+        this.insertStartup();
+        this.insertPaymentPlans();
+    }
+
+    @Transactional
+    private void insertPaymentPlans() {
+        for (String paymentPlanName : paymentPlans) {
+            PaymentPlan paymentPlan = new PaymentPlan();
+            paymentPlan.setName(paymentPlanName);
+
+            paymentPlanRepository.save(paymentPlan);
+        }
+    }
+
+    @Transactional
+    private void insertInvestor() {
+        User user = userRepository.findOneByEmail("investor@fundraisey.com");
+        Investor investor = investorRepository.findByUser(user);
+
+        if (investor == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 1990);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
+            investor = new Investor();
+            investor.setFullName("Fundraisey Investor");
+            investor.setPhoneNumber("081234567891");
+            investor.setCitizenID("12345678910");
+            investor.setDateOfBirth(dateRepresentation);
+            investor.setProfilePicture("https://via.placeholder.com/150/0000FF/808080?text=Investor");
+            investor.setGender(Gender.male);
+            investor.setUser(user);
+
+            Investor saved = investorRepository.save(investor);
+
+            InvestorVerification investorVerification = new InvestorVerification();
+            investorVerification.setInvestor(saved);
+            investorVerification.setVerified(true);
+            investorVerificationRepository.save(investorVerification);
+        }
+    }
+
+    @Transactional
+    private void insertStartup() {
+        User user = userRepository.findOneByEmail("startup@fundraisey.com");
+        Startup startup = startupRepository.findByUser(user);
+
+        if (startup == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, 2021);
+            cal.set(Calendar.MONTH, Calendar.JANUARY);
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            Date dateRepresentation = cal.getTime();
+
+            startup = new Startup();
+            startup.setName("Fundraisey");
+            startup.setDescription("Fundraisey is a startup fundraiser platform.");
+            startup.setLogo("https://via.placeholder.com/150/0000FF/808080?text=FundRaisey");
+            startup.setAddress("Infini Space, Jl. Kabupaten, Nusupan, Trihanggo, Gamping, Sleman Regency, Special " +
+                    "Region of Yogyakarta 55291");
+            startup.setFoundedDate(dateRepresentation);
+            startup.setPhoneNumber("081234567890");
+            startup.setWeb("https://fundraisey.com");
+            startup.setUser(user);
+
+            startupRepository.save(startup);
+        }
+    }
+
+    @Transactional
+    private void insertPaymentAgents() {
+        for (String paymentAgent: paymentAgents) {
+            String[] str = paymentAgent.split(":");
+            String transactionMethodName = str[0];
+            String paymentAgentName = str[1];
+
+            TransactionMethod transactionMethodObj = transactionMethodRepository.findOneByName(transactionMethodName);
+            if (transactionMethodObj == null) {
+                transactionMethodObj = new TransactionMethod();
+                transactionMethodObj.setName(transactionMethodName);
+                transactionMethodRepository.save(transactionMethodObj);
+            }
+
+            PaymentAgent paymentAgentObj = paymentAgentRepository.findOneByName(paymentAgentName);
+            if ((paymentAgentObj == null) || !transactionMethodName.equals(paymentAgentObj.getTransactionMethod().getName())) {
+                paymentAgentObj = new PaymentAgent();
+                paymentAgentObj.setName(paymentAgentName);
+                paymentAgentObj.setTransactionMethod(transactionMethodObj);
+                paymentAgentRepository.save(paymentAgentObj);
+            }
+        }
     }
 
     @Transactional

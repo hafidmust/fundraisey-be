@@ -1,7 +1,7 @@
 package com.fundraisey.backend.controller.startup;
 
 import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
-import com.fundraisey.backend.service.startup.SocialMediaPlatformService;
+import com.fundraisey.backend.service.interfaces.startup.SocialMediaPlatformService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

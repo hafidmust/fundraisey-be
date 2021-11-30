@@ -2,7 +2,7 @@ package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
 import com.fundraisey.backend.repository.startup.SocialMediaPlatformRepository;
-import com.fundraisey.backend.service.startup.SocialMediaPlatformService;
+import com.fundraisey.backend.service.interfaces.startup.SocialMediaPlatformService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

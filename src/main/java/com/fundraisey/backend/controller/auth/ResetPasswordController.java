@@ -1,7 +1,7 @@
 package com.fundraisey.backend.controller.auth;
 
 import com.fundraisey.backend.model.ResetPasswordModel;
-import com.fundraisey.backend.service.ResetPasswordService;
+import com.fundraisey.backend.service.interfaces.auth.ResetPasswordService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

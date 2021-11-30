@@ -6,7 +6,7 @@ import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.StartupNotificationRepository;
 import com.fundraisey.backend.repository.startup.StartupNotificationTypeRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
-import com.fundraisey.backend.service.startup.StartupNotificationService;
+import com.fundraisey.backend.service.interfaces.startup.StartupNotificationService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

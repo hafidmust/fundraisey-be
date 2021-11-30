@@ -49,6 +49,10 @@ public class Credential extends DateProps implements Serializable {
     @Column(name = "credential_expired")
     private Boolean credentialExpired;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status")
+    private LoanStatus status;
+
     @ManyToOne(targetEntity = Startup.class)
     @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
     @JsonBackReference

@@ -1,7 +1,7 @@
 package com.fundraisey.backend.controller.startup;
 
-import com.fundraisey.backend.service.UserService;
-import com.fundraisey.backend.service.startup.StartupNotificationService;
+import com.fundraisey.backend.service.interfaces.UserService;
+import com.fundraisey.backend.service.interfaces.startup.StartupNotificationService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

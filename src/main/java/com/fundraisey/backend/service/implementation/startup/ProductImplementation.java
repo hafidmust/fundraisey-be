@@ -1,14 +1,12 @@
 package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.auth.User;
-import com.fundraisey.backend.entity.startup.Product;
-import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.startup.ProductModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.startup.ProductPhotoRepository;
 import com.fundraisey.backend.repository.startup.ProductRepository;
 import com.fundraisey.backend.repository.startup.StartupRepository;
-import com.fundraisey.backend.service.startup.ProductService;
+import com.fundraisey.backend.service.interfaces.startup.ProductService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
