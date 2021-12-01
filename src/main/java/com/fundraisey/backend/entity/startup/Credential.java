@@ -51,7 +51,7 @@ public class Credential extends DateProps implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "status")
-    private LoanStatus status;
+    private CredentialStatus status;
 
     @ManyToOne(targetEntity = Startup.class)
     @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)

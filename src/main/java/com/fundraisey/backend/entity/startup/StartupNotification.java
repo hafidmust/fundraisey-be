@@ -30,6 +30,10 @@ public class StartupNotification extends DateProps implements Serializable {
     @Column(name = "item_id")
     private Long itemId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StartupNotificationStatus status;
+
     @ManyToOne(targetEntity = StartupNotificationType.class)
     @JoinColumn(name = "id_startup_notification_type", referencedColumnName = "id")
     private StartupNotificationType startupNotificationType;

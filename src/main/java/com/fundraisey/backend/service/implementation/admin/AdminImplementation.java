@@ -1,12 +1,16 @@
 package com.fundraisey.backend.service.implementation.admin;
 
 import com.fundraisey.backend.entity.investor.InvestorVerification;
-import com.fundraisey.backend.entity.startup.Loan;
-import com.fundraisey.backend.entity.startup.LoanStatus;
+import com.fundraisey.backend.entity.investor.InvestorVerificationStatus;
+import com.fundraisey.backend.entity.startup.*;
+import com.fundraisey.backend.model.CredentialStatusModel;
 import com.fundraisey.backend.model.InvestorVerificationModel;
 import com.fundraisey.backend.model.LoanStatusModel;
 import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
+import com.fundraisey.backend.repository.startup.CredentialRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
+import com.fundraisey.backend.repository.startup.StartupNotificationRepository;
+import com.fundraisey.backend.repository.startup.StartupNotificationTypeRepository;
 import com.fundraisey.backend.service.interfaces.admin.AdminService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,12 @@ public class AdminImplementation implements AdminService {
     LoanRepository loanRepository;
     @Autowired
     InvestorVerificationRepository investorVerificationRepository;
+    @Autowired
+    StartupNotificationTypeRepository startupNotificationTypeRepository;
+    @Autowired
+    StartupNotificationRepository startupNotificationRepository;
+    @Autowired
+    CredentialRepository credentialRepository;
     @Autowired
     ResponseTemplate responseTemplate;
 
@@ -65,7 +75,16 @@ public class AdminImplementation implements AdminService {
             if (loan == null) return responseTemplate.notFound("Loan not found");
             if (loan.getStatus() == LoanStatus.accepted) return responseTemplate.notAllowed("Already accepted");
             loan.setStatus(LoanStatus.accepted);
-            loanRepository.save(loan);
+            Loan saved = loanRepository.save(loan);
+
+            StartupNotification notification = new StartupNotification();
+            notification.setStartup(saved.getStartup());
+            notification.setStartupNotificationType(startupNotificationTypeRepository.findByName("Loan"));
+            notification.setMessage("Loan for " + loan.getName() + " has been accepted.");
+            notification.setItemId(saved.getId());
+            notification.setStatus(StartupNotificationStatus.approved);
+            startupNotificationRepository.save(notification);
+
             return responseTemplate.success(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,7 +98,16 @@ public class AdminImplementation implements AdminService {
             if (loan == null) return responseTemplate.notFound("Loan not found");
             if (loan.getStatus() == LoanStatus.rejected) return responseTemplate.notAllowed("Already rejected");
             loan.setStatus(LoanStatus.rejected);
-            loanRepository.save(loan);
+            Loan saved = loanRepository.save(loan);
+
+            StartupNotification notification = new StartupNotification();
+            notification.setStartup(saved.getStartup());
+            notification.setStartupNotificationType(startupNotificationTypeRepository.findByName("Loan"));
+            notification.setMessage("Loan for " + loan.getName() + " has been rejected.");
+            notification.setItemId(saved.getId());
+            notification.setStatus(StartupNotificationStatus.rejected);
+            startupNotificationRepository.save(notification);
+
             return responseTemplate.success(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,7 +154,108 @@ public class AdminImplementation implements AdminService {
             InvestorVerification investorVerification =
                     investorVerificationRepository.getByInvestorId(investorVerificationModel.getInvestorId());
             investorVerification.setVerified(true);
+            investorVerification.setStatus(InvestorVerificationStatus.approved);
             InvestorVerification saved = investorVerificationRepository.save(investorVerification);
+
+            return responseTemplate.success(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map rejectInvestorVerification(InvestorVerificationModel investorVerificationModel) {
+        try {
+            InvestorVerification investorVerification =
+                    investorVerificationRepository.getByInvestorId(investorVerificationModel.getInvestorId());
+            investorVerification.setVerified(false);
+            investorVerification.setStatus(InvestorVerificationStatus.rejected);
+            InvestorVerification saved = investorVerificationRepository.save(investorVerification);
+
+            return responseTemplate.success(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getAllPendingCredential(Integer page, Integer size, String sortAttribute, String sortType) {
+        Page<Credential> credentials;
+        Pageable pageable;
+        sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
+        try {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
+                pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
+            } else {
+                pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
+            }
+
+            credentials = credentialRepository.findByStatus(CredentialStatus.pending, pageable);
+
+            return responseTemplate.success(credentials);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getCredentialById(Long id) {
+        try {
+            Credential credential = credentialRepository.getById(id);
+            if (credential == null) return responseTemplate.notFound("Credential not found");
+            return responseTemplate.success(credential);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map acceptCredential(CredentialStatusModel credentialStatusModel) {
+        try {
+            Credential credential =
+                    credentialRepository.getById(credentialStatusModel.getCredentialId());
+            if (credential == null) return responseTemplate.notFound("Credential not found");
+            if (credential.getStatus() == CredentialStatus.accepted) return responseTemplate.notAllowed("Already accepted");
+            credential.setStatus(CredentialStatus.accepted);
+            Credential saved = credentialRepository.save(credential);
+
+            StartupNotification notification = new StartupNotification();
+            notification.setStartup(saved.getStartup());
+            notification.setStartupNotificationType(startupNotificationTypeRepository.findByName("Credential"));
+            notification.setMessage("Credential for " + credential.getName() + " has been accepted.");
+            notification.setItemId(saved.getId());
+            notification.setStatus(StartupNotificationStatus.approved);
+            startupNotificationRepository.save(notification);
+
+            return responseTemplate.success(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map rejectCredential(CredentialStatusModel credentialStatusModel) {
+        try {
+            Credential credential =
+                    credentialRepository.getById(credentialStatusModel.getCredentialId());
+            if (credential == null) return responseTemplate.notFound("Credential not found");
+            if (credential.getStatus() == CredentialStatus.rejected) return responseTemplate.notAllowed("Already " +
+                    "rejected");
+            credential.setStatus(CredentialStatus.rejected);
+            Credential saved = credentialRepository.save(credential);
+
+            StartupNotification notification = new StartupNotification();
+            notification.setStartup(saved.getStartup());
+            notification.setStartupNotificationType(startupNotificationTypeRepository.findByName("Credential"));
+            notification.setMessage("Credential for " + credential.getName() + " has been rejected.");
+            notification.setItemId(saved.getId());
+            notification.setStatus(StartupNotificationStatus.rejected);
+            startupNotificationRepository.save(notification);
 
             return responseTemplate.success(saved);
         } catch (Exception e) {

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PaymentPlanRepository extends PagingAndSortingRepository<PaymentPlan, Long> {
-    PaymentPlan findByName(String name);
+    PaymentPlan findOneByName(String name);
 
     @Query("SELECT pp FROM PaymentPlan pp WHERE id = :id")
     PaymentPlan getById(@Param("id") Long id);
