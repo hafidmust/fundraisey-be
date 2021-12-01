@@ -143,10 +143,13 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Transactional
     private void insertPaymentPlans() {
         for (String paymentPlanName : paymentPlans) {
-            PaymentPlan paymentPlan = new PaymentPlan();
-            paymentPlan.setName(paymentPlanName);
+            PaymentPlan paymentPlan = paymentPlanRepository.findOneByName(paymentPlanName);
+            if (paymentPlan == null) {
+                paymentPlan = new PaymentPlan();
+                paymentPlan.setName(paymentPlanName);
 
-            paymentPlanRepository.save(paymentPlan);
+                paymentPlanRepository.save(paymentPlan);
+            }
         }
     }
 
@@ -234,18 +237,24 @@ public class DatabaseSeeder implements ApplicationRunner {
     @Transactional
     private void insertCredentialTypes() {
         for (String ct: credentialTypes) {
-            CredentialType credentialType = new CredentialType();
-            credentialType.setName(ct);
-            credentialTypeRepository.save(credentialType);
+            CredentialType credentialType = credentialTypeRepository.findOneByName(ct);
+            if (credentialType == null) {
+                credentialType = new CredentialType();
+                credentialType.setName(ct);
+                credentialTypeRepository.save(credentialType);
+            }
         }
     }
 
     @Transactional
     private void insertStartupNotificationTypes() {
         for (String snt: startupNotificationTypes) {
-            StartupNotificationType startupNotificationType = new StartupNotificationType();
-            startupNotificationType.setName(snt);
-            startupNotificationTypeRepository.save(startupNotificationType);
+            StartupNotificationType startupNotificationType = startupNotificationTypeRepository.findOneByName(snt);
+            if (startupNotificationType == null) {
+                startupNotificationType = new StartupNotificationType();
+                startupNotificationType.setName(snt);
+                startupNotificationTypeRepository.save(startupNotificationType);
+            }
         }
     }
 
@@ -256,12 +265,15 @@ public class DatabaseSeeder implements ApplicationRunner {
             String nameSCP = str[0];
             String urlSCP = str[1];
 
-            SocialMediaPlatform socialMediaPlatform = new SocialMediaPlatform();
+            SocialMediaPlatform socialMediaPlatform = socialMediaPlatformRepository.findOneByName(nameSCP);
+            if (socialMediaPlatform == null) {
+                socialMediaPlatform = new SocialMediaPlatform();
+                socialMediaPlatform.setName(nameSCP);
+                socialMediaPlatform.setWebsite(urlSCP);
 
-            socialMediaPlatform.setName(nameSCP);
-            socialMediaPlatform.setWebsite(urlSCP);
+                socialMediaPlatformRepository.save(socialMediaPlatform);
+            }
 
-            socialMediaPlatformRepository.save(socialMediaPlatform);
         }
     }
 
