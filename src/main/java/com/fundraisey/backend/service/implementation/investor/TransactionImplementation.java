@@ -12,10 +12,13 @@ import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
 import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
+import com.fundraisey.backend.service.implementation.auth.LoginImplementation;
 import com.fundraisey.backend.service.interfaces.investor.TransactionService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import com.fundraisey.backend.util.SimpleStringUtils;
 import org.hibernate.type.CalendarTimeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +51,8 @@ public class TransactionImplementation implements TransactionService {
     ReturnInstallmentRepository returnInstallmentRepository;
     @Autowired
     SimpleStringUtils simpleStringUtils;
+
+    Logger logger = LoggerFactory.getLogger(LoginImplementation.class);
 
     @Override
     public Map insert(String email, TransactionRequestModel transactionRequestModel) {
@@ -160,7 +165,7 @@ public class TransactionImplementation implements TransactionService {
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());

@@ -95,7 +95,8 @@ public class LoanImplementation implements LoanService {
     }
 
     @Override
-    public Map getAllByEmail(Integer page, Integer size, String sortAttribute, String sortType, String email) {
+    public Map getAllByEmail(Integer page, Integer size, String sortAttribute, String sortType,
+                             String search, String email) {
         Page<Loan> loans;
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
@@ -104,13 +105,13 @@ public class LoanImplementation implements LoanService {
             Startup startup = startupRepository.findByUser(user);
             List<LoanDetailModel> response = new ArrayList<>();
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            loans = loanRepository.findByStartup(startup, pageable);
+            loans = loanRepository.findByStartupAndNameContainingIgnoreCase(startup, search,pageable);
             for (Loan loan : loans.getContent()) {
                 LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 
@@ -125,20 +126,21 @@ public class LoanImplementation implements LoanService {
     }
 
     @Override
-    public Map getAll(Integer page, Integer size, String sortAttribute, String sortType) {
+    public Map getAllAccepted(Integer page, Integer size, String sortAttribute, String sortType, String search) {
         Page<Loan> loans;
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
         try {
             List<LoanDetailModel> response = new ArrayList<>();
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            loans = loanRepository.findByStatus(LoanStatus.accepted, pageable);
+//            loans = loanRepository.findByStatus(LoanStatus.accepted, pageable);
+            loans = loanRepository.getAcceptedLoanByNameContainingOrStartupNameContaining(search, pageable);
             for (Loan loan : loans.getContent()) {
                 LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 

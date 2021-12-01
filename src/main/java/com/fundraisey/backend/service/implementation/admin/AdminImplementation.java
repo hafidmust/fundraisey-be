@@ -33,7 +33,7 @@ public class AdminImplementation implements AdminService {
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
         try {
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
@@ -93,7 +93,7 @@ public class AdminImplementation implements AdminService {
         Pageable pageable;
         sortAttribute = sortAttribute.equals("") ? "id" : sortAttribute;
         try {
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());

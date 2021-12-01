@@ -51,7 +51,7 @@ public class StartupNotificationImplementation implements StartupNotificationSer
 
             if (user == null) return responseTemplate.notFound("Email not found");
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());

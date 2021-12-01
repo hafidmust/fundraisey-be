@@ -27,18 +27,20 @@ public class LoanController {
     }
 
     @GetMapping("/all")
-    ResponseEntity<Map> getAll(
+    ResponseEntity<Map> getAllAccepted(
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "sort-by", required = false) String sortAttribute,
-            @RequestParam(value = "sort-type", required = false) String sortType
+            @RequestParam(value = "sort-type", required = false) String sortType,
+            @RequestParam(value = "search", required = false) String search
     ) {
         page = (page == null) ? 0 : page;
         size = (size == null) ? 20 : size;
         sortAttribute = (sortAttribute == null) ? "" : sortAttribute;
         sortType = (sortType == null) ? "" : sortType;
+        search = (search == null) ? "" : search;
 
-        Map response = loanService.getAll(page, size, sortAttribute, sortType);
+        Map response = loanService.getAllAccepted(page, size, sortAttribute, sortType, search);
 
         return responseTemplate.controllerHttpRestResponse(response);
     }
@@ -59,14 +61,16 @@ public class LoanController {
             @RequestParam(value = "size", required = false) Integer size,
             @RequestParam(value = "sort-by", required = false) String sortAttribute,
             @RequestParam(value = "sort-type", required = false) String sortType,
+            @RequestParam(value = "search", required = false) String search,
             Principal principal
     ) {
         page = (page == null) ? 0 : page;
         size = (size == null) ? 20 : size;
         sortAttribute = (sortAttribute == null) ? "" : sortAttribute;
         sortType = (sortType == null) ? "" : sortType;
+        search = (search == null) ? "" : search;
 
-        Map response = loanService.getAllByEmail(page, size, sortAttribute, sortType, principal.getName());
+        Map response = loanService.getAllByEmail(page, size, sortAttribute, sortType, search, principal.getName());
 
         return responseTemplate.controllerHttpRestResponse(response);
     }
