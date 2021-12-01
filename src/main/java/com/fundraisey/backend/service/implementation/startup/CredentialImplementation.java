@@ -2,6 +2,7 @@ package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.startup.Credential;
+import com.fundraisey.backend.entity.startup.CredentialStatus;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.CredentialRequestModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
@@ -45,6 +46,7 @@ public class CredentialImplementation implements CredentialService {
             credential.setCredentialType(credentialTypeRepository.getById(credentialRequestModel.getCredentialTypeId()));
             credential.setDescription(credentialRequestModel.getCredentialDescription());
             credential.setCredentialId(credentialRequestModel.getCredentialId());
+            credential.setStatus(CredentialStatus.pending);
 
             Credential saved = credentialRepository.save(credential);
 
