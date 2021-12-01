@@ -4,27 +4,21 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
-import com.fundraisey.backend.entity.startup.CredentialType;
-import com.fundraisey.backend.entity.startup.SocialMediaPlatform;
+import com.fundraisey.backend.entity.startup.*;
 import com.fundraisey.backend.entity.auth.*;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
-import com.fundraisey.backend.entity.startup.PaymentPlan;
-import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.entity.transaction.PaymentAgent;
 import com.fundraisey.backend.entity.transaction.TransactionMethod;
 import com.fundraisey.backend.repository.auth.ClientRepository;
 import com.fundraisey.backend.repository.auth.RolePathRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.repository.startup.CredentialTypeRepository;
-import com.fundraisey.backend.repository.startup.SocialMediaPlatformRepository;
+import com.fundraisey.backend.repository.startup.*;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
 import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.TransactionMethodRepository;
-import com.fundraisey.backend.repository.startup.PaymentPlanRepository;
-import com.fundraisey.backend.repository.startup.StartupRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,15 +62,14 @@ public class DatabaseSeeder implements ApplicationRunner {
     private InvestorRepository investorRepository;
     @Autowired
     private InvestorVerificationRepository investorVerificationRepository;
-
     @Autowired
     private PaymentPlanRepository paymentPlanRepository;
-
     @Autowired
     private CredentialTypeRepository credentialTypeRepository;
-
     @Autowired
     private SocialMediaPlatformRepository socialMediaPlatformRepository;
+    @Autowired
+    private StartupNotificationTypeRepository startupNotificationTypeRepository;
 
     private String defaultPassword = "password";
 
@@ -104,6 +97,11 @@ public class DatabaseSeeder implements ApplicationRunner {
     private String[] credentialTypes = new String[] {
             "License",
             "Certificate"
+    };
+
+    private String[] startupNotificationTypes = new String[] {
+            "Loan",
+            "Credential"
     };
 
     private String[] socialMediaPlatforms = new String[] {
@@ -139,6 +137,7 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertInvestor();
         this.insertStartup();
         this.insertPaymentPlans();
+        this.insertStartupNotificationTypes();
     }
 
     @Transactional
@@ -238,6 +237,15 @@ public class DatabaseSeeder implements ApplicationRunner {
             CredentialType credentialType = new CredentialType();
             credentialType.setName(ct);
             credentialTypeRepository.save(credentialType);
+        }
+    }
+
+    @Transactional
+    private void insertStartupNotificationTypes() {
+        for (String snt: startupNotificationTypes) {
+            StartupNotificationType startupNotificationType = new StartupNotificationType();
+            startupNotificationType.setName(snt);
+            startupNotificationTypeRepository.save(startupNotificationType);
         }
     }
 
