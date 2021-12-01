@@ -58,7 +58,7 @@ public class UserImplementation implements UserService {
             String[] roleNames = {role};
             List<Role> roles = roleRepository.findByNameIn(roleNames);
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 options = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 options = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());

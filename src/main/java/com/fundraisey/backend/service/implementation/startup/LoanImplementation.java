@@ -104,7 +104,7 @@ public class LoanImplementation implements LoanService {
             Startup startup = startupRepository.findByUser(user);
             List<LoanDetailModel> response = new ArrayList<>();
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
@@ -132,7 +132,7 @@ public class LoanImplementation implements LoanService {
         try {
             List<LoanDetailModel> response = new ArrayList<>();
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
