@@ -73,8 +73,9 @@ public class TransactionImplementation implements TransactionService {
             if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
             PaymentAgent paymentAgent = paymentAgentRepository.getById(transactionRequestModel.getPaymentAgentId());
             if (paymentAgent == null) return responseTemplate.notFound(("Payment agent not found"));
-            if ((transactionRequestModel.getAmount() +
-                    transactionRepository.sumOfPaidTransactionByLoanId(loan.getId())) > loan.getTargetValue())
+            Long paidSum = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+            if (paidSum == null) paidSum = 0L;
+            if ((transactionRequestModel.getAmount() + paidSum) > loan.getTargetValue())
                 return responseTemplate.notAllowed("Total of current loan value and transaction amount exceed the target value");
 
             Transaction transaction = new Transaction();

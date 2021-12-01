@@ -288,6 +288,19 @@ public class LoanImplementation implements LoanService {
         }
     }
 
+    @Override
+    public Map getWithdrawalHistory(String email) {
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+            List<WithdrawalInvoice> withdrawals = withdrawalInvoiceRepository.getByStartupId(startup.getId());
+
+            return responseTemplate.success(withdrawals);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
     private LoanDetailModel createLoanDetailModel(Loan loan) {
         Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
         if (currentValue == null) currentValue = 0L;
