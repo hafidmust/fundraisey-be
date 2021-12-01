@@ -12,4 +12,5 @@ public interface LoanService {
     Map getPaymentList(Long loanId);
     Map pay(String email, Long loanId, Integer period);
     Map withdraw(String email, Long loanId);
+    Map getWithdrawalHistory(String email);
 }

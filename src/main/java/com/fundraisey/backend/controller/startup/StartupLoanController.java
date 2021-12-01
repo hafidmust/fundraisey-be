@@ -1,6 +1,7 @@
 package com.fundraisey.backend.controller.startup;
 
 import com.fundraisey.backend.model.StartupLoanRequestModel;
+import com.fundraisey.backend.repository.startup.WithdrawalInvoiceRepository;
 import com.fundraisey.backend.service.interfaces.startup.LoanService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,13 @@ public class StartupLoanController {
     @PostMapping("/withdraw")
     ResponseEntity<Map> withdraw(@RequestBody StartupLoanRequestModel startupLoanRequestModel, Principal principal) {
         Map response = loanService.withdraw(principal.getName(), startupLoanRequestModel.getLoanId());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @GetMapping("/withdraw-history")
+    ResponseEntity<Map> getWithdrawalHistory(Principal principal) {
+        Map response = loanService.getWithdrawalHistory(principal.getName());
 
         return responseTemplate.controllerHttpRestResponse(response);
     }
