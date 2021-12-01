@@ -28,10 +28,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TransactionImplementation implements TransactionService {
@@ -73,6 +70,8 @@ public class TransactionImplementation implements TransactionService {
             if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
             PaymentAgent paymentAgent = paymentAgentRepository.getById(transactionRequestModel.getPaymentAgentId());
             if (paymentAgent == null) return responseTemplate.notFound(("Payment agent not found"));
+
+            // Check if total current value + new transaction amount exceed total value
             Long paidSum = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
             if (paidSum == null) paidSum = 0L;
             if ((transactionRequestModel.getAmount() + paidSum) > loan.getTargetValue())
@@ -103,10 +102,25 @@ public class TransactionImplementation implements TransactionService {
             Investor investor = investorRepository.findByUser(user);
             Transaction transaction = transactionRepository.getById(transactionRequestModel.getTransactionId());
 
+            Calendar calendar = Calendar.getInstance();
+            Integer timeComparison = calendar.getTime().compareTo(transaction.getPaymentDeadline());
+            if (timeComparison == 1) return responseTemplate.notAllowed("Payment deadline exceeded");
+
+            if (transaction == null) return responseTemplate.notFound("Transaction not found");
             if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
                     "owner transaction");
             if (investor == null) return responseTemplate.notFound("Investor not found");
             if (transaction.getTransactionStatus() == TransactionStatus.paid) return responseTemplate.notAllowed("Already paid");
+
+            // Check if total current value + new transaction amount exceed total value
+            List<Transaction> transactions = new ArrayList<>();
+            transactions.add(transaction);
+            Loan loan = loanRepository.findByTransactionsIn(transactions);
+            if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
+            Long paidSum = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+            if (paidSum == null) paidSum = 0L;
+            if ((transaction.getAmount() + paidSum) > loan.getTargetValue())
+                return responseTemplate.notAllowed("Total of current loan value and transaction amount exceed the target value");
 
             addReturnInstallment(transaction);
             transaction.setTransactionStatus(TransactionStatus.paid);
