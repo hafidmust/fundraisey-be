@@ -42,7 +42,7 @@ public class CredentialImplementation implements CredentialService {
             credential.setIssuingOrganization(credentialRequestModel.getIssuingOrganization());
             credential.setIssueDate(credentialRequestModel.getIssueDate());
             credential.setExpirationDate(credentialRequestModel.getExpirationDate());
-            credential.setCredentialUrl(credential.getCredentialUrl());
+            credential.setCredentialUrl(credentialRequestModel.getCredentialUrl());
             credential.setCredentialType(credentialTypeRepository.getById(credentialRequestModel.getCredentialTypeId()));
             credential.setDescription(credentialRequestModel.getCredentialDescription());
             credential.setCredentialId(credentialRequestModel.getCredentialId());

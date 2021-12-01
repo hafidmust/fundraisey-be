@@ -63,26 +63,40 @@ public class AdminController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/credential")
-    ResponseEntity<Map> getAllUnacceptedCredential() {
-        return null;
+    ResponseEntity<Map> getAllPendingCredential(
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort-by", required = false) String sortAttribute,
+            @RequestParam(value = "sort-type", required = false) String sortType
+    ) {
+        page = (page == null) ? 0 : page;
+        size = (size == null) ? 20 : size;
+        sortAttribute = (sortAttribute == null) ? "" : sortAttribute;
+        sortType = (sortType == null) ? "" : sortType;
+
+        Map response = adminService.getAllPendingCredential(page, size, sortAttribute, sortType);
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/credential/{id}")
     ResponseEntity<Map> getCredentialLoanById(@PathVariable("id") Long id) {
-        return null;
+        Map response = adminService.getCredentialById(id);
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/credential/accept")
     ResponseEntity<Map> acceptCredential(@RequestBody CredentialStatusModel credentialStatusModel) {
-        return null;
+        Map response = adminService.acceptCredential(credentialStatusModel);
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/credential/reject")
     ResponseEntity<Map> rejectCredential(@RequestBody CredentialStatusModel credentialStatusModel) {
-        return null;
+        Map response = adminService.rejectCredential(credentialStatusModel);
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 
     @Secured("ROLE_ADMIN")

@@ -184,6 +184,18 @@ public class AdminImplementation implements AdminService {
     }
 
     @Override
+    public Map getCredentialById(Long id) {
+        try {
+            Credential credential = credentialRepository.getById(id);
+            if (credential == null) return responseTemplate.notFound("Credential not found");
+            return responseTemplate.success(credential);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
     public Map acceptCredential(CredentialStatusModel credentialStatusModel) {
         try {
             Credential credential =
