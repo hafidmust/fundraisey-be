@@ -1,6 +1,7 @@
 package com.fundraisey.backend.service.implementation.admin;
 
 import com.fundraisey.backend.entity.investor.InvestorVerification;
+import com.fundraisey.backend.entity.investor.InvestorVerificationStatus;
 import com.fundraisey.backend.entity.startup.*;
 import com.fundraisey.backend.model.CredentialStatusModel;
 import com.fundraisey.backend.model.InvestorVerificationModel;
@@ -153,6 +154,23 @@ public class AdminImplementation implements AdminService {
             InvestorVerification investorVerification =
                     investorVerificationRepository.getByInvestorId(investorVerificationModel.getInvestorId());
             investorVerification.setVerified(true);
+            investorVerification.setStatus(InvestorVerificationStatus.approved);
+            InvestorVerification saved = investorVerificationRepository.save(investorVerification);
+
+            return responseTemplate.success(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map rejectInvestorVerification(InvestorVerificationModel investorVerificationModel) {
+        try {
+            InvestorVerification investorVerification =
+                    investorVerificationRepository.getByInvestorId(investorVerificationModel.getInvestorId());
+            investorVerification.setVerified(false);
+            investorVerification.setStatus(InvestorVerificationStatus.rejected);
             InvestorVerification saved = investorVerificationRepository.save(investorVerification);
 
             return responseTemplate.success(saved);

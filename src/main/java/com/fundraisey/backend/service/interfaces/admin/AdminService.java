@@ -14,6 +14,7 @@ public interface AdminService {
     public Map getAllUnacceptedInvestorVerification(Integer page, Integer size, String sortAttribute, String sortType);
     public Map getInvestorVerificationByInvestorId(Long investorId);
     public Map acceptInvestorVerification(InvestorVerificationModel investorVerificationModel);
+    public Map rejectInvestorVerification(InvestorVerificationModel investorVerificationModel);
     public Map getAllPendingCredential(Integer page, Integer size, String sortAttribute, String sortType);
     public Map getCredentialById(Long id);
     public Map acceptCredential(CredentialStatusModel credentialStatusModel);

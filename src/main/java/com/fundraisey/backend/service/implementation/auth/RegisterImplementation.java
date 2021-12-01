@@ -4,6 +4,7 @@ import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
+import com.fundraisey.backend.entity.investor.InvestorVerificationStatus;
 import com.fundraisey.backend.entity.startup.Startup;
 import com.fundraisey.backend.model.RegisterModel;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
@@ -169,6 +170,7 @@ public class RegisterImplementation implements RegisterService {
             InvestorVerification investorVerification = new InvestorVerification();
             investorVerification.setInvestor(investor);
             investorVerification.setVerified(false);
+            investorVerification.setStatus(InvestorVerificationStatus.pending);
             investorVerificationRepository.save(investorVerification);
 
             return responseTemplate.success(null);

@@ -127,8 +127,16 @@ public class AdminController {
 
     @Secured("ROLE_ADMIN")
     @PostMapping("/investor-verification/accept")
-    ResponseEntity<Map> getInvestorVerification(@RequestBody InvestorVerificationModel investorVerificationModel) {
+    ResponseEntity<Map> acceptInvestorVerification(@RequestBody InvestorVerificationModel investorVerificationModel) {
         Map response = adminService.acceptInvestorVerification(investorVerificationModel);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/investor-verification/reject")
+    ResponseEntity<Map> rejectInvestorVerification(@RequestBody InvestorVerificationModel investorVerificationModel) {
+        Map response = adminService.rejectInvestorVerification(investorVerificationModel);
 
         return responseTemplate.controllerHttpRestResponse(response);
     }

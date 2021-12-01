@@ -4,6 +4,7 @@ import com.fundraisey.backend.entity.auth.Client;
 import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.RolePath;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.investor.InvestorVerificationStatus;
 import com.fundraisey.backend.entity.startup.*;
 import com.fundraisey.backend.entity.auth.*;
 import com.fundraisey.backend.entity.investor.Investor;
@@ -179,6 +180,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             InvestorVerification investorVerification = new InvestorVerification();
             investorVerification.setInvestor(saved);
             investorVerification.setVerified(true);
+            investorVerification.setStatus(InvestorVerificationStatus.approved);
             investorVerificationRepository.save(investorVerification);
         }
     }
