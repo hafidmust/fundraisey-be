@@ -21,7 +21,7 @@ public class StartupNotification extends DateProps implements Serializable {
 
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
-    @JsonBackReference
+//    @JsonBackReference
     private Startup startup;
 
     @Column(name = "message")

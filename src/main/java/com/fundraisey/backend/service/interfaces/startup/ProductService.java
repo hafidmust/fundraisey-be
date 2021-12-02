@@ -9,4 +9,5 @@ public interface ProductService {
     Map insert(ProductModel productModel, Long id);
     Map update(ProductModel productModel, Long id);
     Map delete(Long productId, Long userId);
+    Map getAllByStartupId(Long startupId);
 }

@@ -2,6 +2,7 @@ package com.fundraisey.backend.entity.startup;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,31 +23,31 @@ public class Credential extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = true, name = "credential_url")
+    @Column(nullable = true, name = "credential_url")
     private String credentialUrl;
 
-    @Column(length = 100, nullable = true, name = "credential_id")
+    @Column(nullable = true, name = "credential_id")
     private String credentialId;
 
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
-    @Column(length = 200, nullable = true, name = "description")
+    @Column(nullable = true, name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(length = 100, nullable = true, name = "issuing_organization")
     private String issuingOrganization;
 
-    @Column(length = 100, nullable = true, name = "issue_date")
+    @Column(nullable = true, name = "issue_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date issueDate;
 
     @Column(length = 100, nullable = true, name = "expiration_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date expirationDate;
 
     @Enumerated(EnumType.STRING)
@@ -62,6 +63,7 @@ public class Credential extends DateProps implements Serializable {
     @JoinColumn(name = "id_credential_type", referencedColumnName = "id")
     private CredentialType credentialType;
 
-    @OneToMany(mappedBy = "credentialDocument", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "credential", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Document> documents;
 }

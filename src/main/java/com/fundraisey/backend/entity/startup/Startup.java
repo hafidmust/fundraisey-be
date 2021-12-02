@@ -74,6 +74,7 @@ public class Startup extends DateProps implements Serializable {
     private List<Credential> credentials;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
-    @JsonManagedReference
+//    @JsonManagedReference
+    @JsonIgnore
     private List<StartupNotification> startupNotifications ;
 }

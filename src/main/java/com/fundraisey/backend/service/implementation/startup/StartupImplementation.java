@@ -152,7 +152,7 @@ public class StartupImplementation implements StartupService {
 
                     if (indexCredential.getDocuments() != null) {
                         for (Document indexDocument : indexCredential.getDocuments()) {
-                            indexDocument.setCredentialDocument(indexCredential);
+                            indexDocument.setCredential(indexCredential);
                             documentRepository.save(indexDocument);
                         }
                     }
@@ -226,7 +226,7 @@ public class StartupImplementation implements StartupService {
 
                     if (indexCredential.getDocuments() != null) {
                         for (Document indexDocument : indexCredential.getDocuments()) {
-                            indexDocument.setCredentialDocument(indexCredential);
+                            indexDocument.setCredential(indexCredential);
                             documentRepository.save(indexDocument);
                         }
                     }
