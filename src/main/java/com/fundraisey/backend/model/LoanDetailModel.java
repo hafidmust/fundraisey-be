@@ -5,6 +5,7 @@ import com.fundraisey.backend.entity.startup.Startup;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class LoanDetailModel {
@@ -18,5 +19,7 @@ public class LoanDetailModel {
     Long targetValue;
     Long currentValue;
     Float interestRate;
-    Startup startup;
+    Integer lenderCount;
+    String status;
+    List<StartupPaymentListModel> paymentList;
 }

@@ -204,35 +204,47 @@ public class LoanImplementation implements LoanService {
     @Override
     public Map getPaymentList(Long loanId) {
         try {
-            Loan loan = loanRepository.getById(loanId);
-            Integer totalReturnPeriod = loan.getTotalReturnPeriod();
-            List<StartupPaymentListModel> paymentList = new ArrayList<>();
+            List<StartupPaymentListModel> paymentList = createPaymentList(loanId);
 
-            // Create payment date(s)
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(loan.getEndDate());
-            for (Integer period = 1; period <= totalReturnPeriod; period++) {
-                StartupPaymentListModel payment = new StartupPaymentListModel();
-                payment.setPeriod(period);
-                if (totalReturnPeriod == 1) {
-                    calendar.add(Calendar.YEAR, 2);
-                    payment.setReturnDate(calendar.getTime());
-                } else if (totalReturnPeriod == 2) {
-                    calendar.add(Calendar.YEAR, 1);
-                    payment.setReturnDate(calendar.getTime());
-                } else if (totalReturnPeriod == 4) {
-                    calendar.add(Calendar.MONTH, 6);
-                    payment.setReturnDate(calendar.getTime());
-                }
+            return responseTemplate.success(paymentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
 
-                Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+    private List<StartupPaymentListModel> createPaymentList(Long loanId) {
+        Loan loan = loanRepository.getById(loanId);
+        Integer totalReturnPeriod = loan.getTotalReturnPeriod();
+        List<StartupPaymentListModel> paymentList = new ArrayList<>();
 
-                if (totalAmount == null) totalAmount = 0L;
-                payment.setTotalAmount(totalAmount);
+        // Create payment date(s)
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(loan.getEndDate());
+        for (Integer period = 1; period <= totalReturnPeriod; period++) {
+            StartupPaymentListModel payment = new StartupPaymentListModel();
+            payment.setPeriod(period);
+            if (period == 1) {
+                calendar.add(Calendar.YEAR, 2);
+                payment.setReturnDate(calendar.getTime());
+            } else if (totalReturnPeriod == 2) {
+                calendar.add(Calendar.YEAR, 1);
+                payment.setReturnDate(calendar.getTime());
+            } else if (totalReturnPeriod == 4) {
+                calendar.add(Calendar.MONTH, 6);
+                payment.setReturnDate(calendar.getTime());
+            }
 
+            Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+
+            if (totalAmount == null) totalAmount = 0L;
+            payment.setTotalAmount(totalAmount);
+
+            if (loan.getTransactions().size() != 0) {
                 ReturnInstallment returnInstallment =
                         returnInstallmentRepository.findOneByTransactionAndReturnPeriod(loan.getTransactions().get(0)
                                 , period);
+
                 if (returnInstallment == null) {
                     payment.setPaid(false);
                 } else {
@@ -242,14 +254,14 @@ public class LoanImplementation implements LoanService {
                         payment.setPaid(false);
                     }
                 }
-                paymentList.add(payment);
+            } else {
+                payment.setPaid(false);
             }
 
-            return responseTemplate.success(paymentList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return responseTemplate.internalServerError(e);
+            paymentList.add(payment);
         }
+
+        return paymentList;
     }
 
     @Override
@@ -304,6 +316,8 @@ public class LoanImplementation implements LoanService {
     private LoanDetailModel createLoanDetailModel(Loan loan) {
         Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
         if (currentValue == null) currentValue = 0L;
+        Integer lenderCount = transactionRepository.countOfInvestorByLoanId(loan.getId());
+        if (lenderCount == null) lenderCount = 0;
 
         LoanDetailModel loanDetailModel = new LoanDetailModel();
         loanDetailModel.setId(loan.getId());
@@ -314,7 +328,9 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setTargetValue(loan.getTargetValue());
         loanDetailModel.setCurrentValue(currentValue);
         loanDetailModel.setInterestRate(loan.getInterestRate());
-        loanDetailModel.setStartup(loan.getStartup());
+        loanDetailModel.setStatus(loan.getStatus().toString());
+        loanDetailModel.setLenderCount(lenderCount);
+        loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
 
         return loanDetailModel;
     }
