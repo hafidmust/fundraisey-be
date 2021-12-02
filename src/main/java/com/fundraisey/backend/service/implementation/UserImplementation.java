@@ -5,10 +5,13 @@ import com.fundraisey.backend.entity.auth.Role;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.model.UserModel;
-import com.fundraisey.backend.repository.InvestorRepository;
+import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
-import com.fundraisey.backend.service.UserService;
+import com.fundraisey.backend.service.implementation.auth.LoginImplementation;
+import com.fundraisey.backend.service.interfaces.UserService;
+import com.fundraisey.backend.service.OAuth2UserDetailsService;
+import com.fundraisey.backend.service.interfaces.UserService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +20,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +40,10 @@ public class UserImplementation implements UserService {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    private OAuth2UserDetailsService userDetailsService;
+
+
     ResponseTemplate responseTemplate = new ResponseTemplate();
 
     Logger logger = LoggerFactory.getLogger(LoginImplementation.class);
@@ -48,7 +58,7 @@ public class UserImplementation implements UserService {
             String[] roleNames = {role};
             List<Role> roles = roleRepository.findByNameIn(roleNames);
 
-            if ((sortType == "desc") || (sortType == "descending")) {
+            if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 options = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
             } else {
                 options = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
@@ -58,7 +68,7 @@ public class UserImplementation implements UserService {
             for (User user : users.getContent()) {
                 UserModel userModel = new UserModel();
 
-                Investor investor = investorRepository.getByInvestorId(user.getId());
+                Investor investor = investorRepository.getByUserId(user.getId());
 
                 userModel.setId(user.getId());
                 userModel.setEmail(user.getEmail());
@@ -106,7 +116,7 @@ public class UserImplementation implements UserService {
 
             User user = userRepository.findOneByEmail(email);
 
-            Investor investor = investorRepository.getByInvestorId(user.getId());
+            Investor investor = investorRepository.getByUserId(user.getId());
 
             userModel.setId(user.getId());
             userModel.setEmail(user.getEmail());
@@ -135,7 +145,7 @@ public class UserImplementation implements UserService {
     @Override
     public Map update(UserModel userModel) {
         User user = userRepository.getById(userModel.getId());
-        Investor investor = investorRepository.getByInvestorId(user.getId());
+        Investor investor = investorRepository.getByUserId(user.getId());
 
         if (investor == null) {
             investor = new Investor();
@@ -159,5 +169,20 @@ public class UserImplementation implements UserService {
         userModel.setId(user.getId());
 
         return update(userModel);
+    }
+
+    @Override
+    public Long getUserById(Principal principal) {
+        String username = principal.getName();
+
+        UserDetails user = null;
+
+        if (!StringUtils.isEmpty(username)) {
+            user = userDetailsService.loadUserByUsername(username);
+        }
+
+        User userLogin = userRepository.findOneByEmail(user.getUsername());
+
+        return userLogin.getId();
     }
 }

@@ -1,7 +1,9 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,10 +30,10 @@ public class SocialMedia extends DateProps implements Serializable {
     @JoinColumn(name = "id_social_media_platform", referencedColumnName = "id")
     private SocialMediaPlatform socialMediaPlatform;
 
-    @JsonIgnore
-    @OneToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_startup", referencedColumnName = "id")
-    private Startup socialMediaStartup;
+    @JsonBackReference
+    @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_startup", referencedColumnName = "id", updatable = false, insertable = true)
+    private Startup startup;
 
     @Column(length = 100, nullable = true, name = "url")
     private String url;

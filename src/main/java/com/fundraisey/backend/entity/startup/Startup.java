@@ -3,6 +3,7 @@ package com.fundraisey.backend.entity.startup;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "name")
     private String name;
 
-    @Column(length = 100, nullable = true, name = "description")
+    @Column(columnDefinition = "TEXT", nullable = true, name = "description")
     private String description;
 
     @Column(length = 100, nullable = true, name = "logo")
@@ -41,23 +42,38 @@ public class Startup extends DateProps implements Serializable {
     @Column(length = 100, nullable = true, name = "web")
     private String web;
 
-    @Column(length = 100, nullable = true, name = "address")
+    @Column(columnDefinition = "TEXT", nullable = true, name = "address")
     private String address;
 
     @Column(length = 100, nullable = true, name = "born_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date bornDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private Date foundedDate;
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
-    @OneToOne(mappedBy = "socialMediaStartup", cascade = CascadeType.ALL)
-    private SocialMedia socialMedia;
+    @JsonIgnore
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Loan> loans;
 
-    @OneToMany(mappedBy = "projectStartup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Project> projects;
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<SocialMedia> socialMedias;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Credential> credentials;
+
+    @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<StartupNotification> startupNotifications ;
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.Gender;
 import com.fundraisey.backend.entity.auth.User;
+import com.fundraisey.backend.entity.transaction.Transaction;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,4 +51,16 @@ public class Investor extends DateProps implements Serializable {
     @OneToOne(targetEntity = User.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "investor")
+    private List<BankAccount> bankAccounts;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "investor")
+    private InvestorVerification investorVerification;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "investor")
+    private List<Transaction> transactions;
 }
