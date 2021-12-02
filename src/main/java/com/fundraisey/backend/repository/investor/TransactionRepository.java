@@ -27,6 +27,10 @@ public interface TransactionRepository extends PagingAndSortingRepository<Transa
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.transactionStatus = 'paid' AND t.loan.id = :id")
     Long sumOfPaidTransactionByLoanId(@Param("id") Long id);
 
+    @Query("SELECT COUNT(DISTINCT t.investor.id) FROM Transaction t WHERE t.transactionStatus = 'paid' AND t.loan.id " +
+            "= :id")
+    Integer countOfInvestorByLoanId(@Param("id") Long id);
+
     @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.transactionStatus = 'paid' AND t.loan.startup.id = :id")
     Long sumOfPaidTransactionByStartupId(@Param("id") Long id);
 

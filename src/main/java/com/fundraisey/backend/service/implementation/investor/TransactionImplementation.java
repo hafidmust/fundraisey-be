@@ -144,20 +144,20 @@ public class TransactionImplementation implements TransactionService {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getLoan().getEndDate());
-        for (Integer i = 1; i <= totalReturnPeriod; i++) {
+        for (Integer period = 1; period <= totalReturnPeriod; period++) {
             ReturnInstallment returnInstallment = new ReturnInstallment();
-            if (paymentPlan.equals("cash") && (totalReturnPeriod == 1)) {
+            if (period == 1) {
                 calendar.add(Calendar.YEAR, 2);
                 returnInstallment.setReturnDate(calendar.getTime());
-            } else if (paymentPlan.equals("per1year") && (totalReturnPeriod == 2)) {
+            } else if (totalReturnPeriod == 2) {
                 calendar.add(Calendar.YEAR, 1);
                 returnInstallment.setReturnDate(calendar.getTime());
-            } else if (paymentPlan.equals("per6months") && (totalReturnPeriod == 4)) {
+            } else if (totalReturnPeriod == 4) {
                 calendar.add(Calendar.MONTH, 6);
                 returnInstallment.setReturnDate(calendar.getTime());
             }
             returnInstallment.setTransaction(transaction);
-            returnInstallment.setReturnPeriod(i);
+            returnInstallment.setReturnPeriod(period);
             returnInstallment.setReturnStatus(ReturnStatus.unpaid);
             returnInstallment.setTotalReturnPeriod(totalReturnPeriod);
             returnInstallment.setAmount(amountReturned.longValue());
