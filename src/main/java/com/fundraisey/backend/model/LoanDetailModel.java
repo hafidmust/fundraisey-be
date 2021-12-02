@@ -11,9 +11,9 @@ public class LoanDetailModel {
     Long id;
     String name;
     String description;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     Date startDate;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     Date endDate;
     Long targetValue;
     Long currentValue;

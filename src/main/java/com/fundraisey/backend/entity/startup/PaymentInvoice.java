@@ -27,8 +27,8 @@ public class PaymentInvoice implements Serializable {
 
     @Column(name = "payment_date")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern="dd-MM-yyyy'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
-    @DateTimeFormat(pattern = "dd-MM-yyyy'T'HH:mm:ss.SSSZ")
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date paymentDate;
 
     @Column(name = "amount")

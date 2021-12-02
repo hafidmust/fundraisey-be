@@ -40,14 +40,14 @@ public class Credential extends DateProps implements Serializable {
 
     @Column(nullable = true, name = "issue_date")
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date issueDate;
 
     @Column(length = 100, nullable = true, name = "expiration_date")
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date expirationDate;
 
     @Enumerated(EnumType.STRING)

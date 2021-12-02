@@ -8,7 +8,7 @@ import java.util.Date;
 @Data
 public class StartupPaymentListModel {
     Integer period;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     Date returnDate;
     Long totalAmount;
     boolean isPaid;
