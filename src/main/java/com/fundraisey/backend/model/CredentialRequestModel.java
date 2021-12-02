@@ -9,9 +9,9 @@ import java.util.Date;
 public class CredentialRequestModel {
     String name;
     String issuingOrganization;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     Date issueDate;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     Date expirationDate;
     String credentialUrl;
     String credentialId;

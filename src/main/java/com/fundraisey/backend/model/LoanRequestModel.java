@@ -10,7 +10,7 @@ public class LoanRequestModel {
     String title;
     Long targetValue;
     String description;
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
     Date endDate;
     Float interestRate;
     Long paymentPlanId;

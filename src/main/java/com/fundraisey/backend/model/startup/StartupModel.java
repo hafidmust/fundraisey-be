@@ -18,8 +18,8 @@ public class StartupModel {
     private String phoneNumber;
     private String web;
     private String address;
-    @JsonFormat(pattern="dd-MM-yyyy")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date foundedDate;
 
     // Social Media

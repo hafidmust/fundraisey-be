@@ -43,7 +43,7 @@ public class Investor extends DateProps implements Serializable {
 
     @Column(length = 100, nullable = true, name = "date_of_birth")
     @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="dd-MM-yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
 
