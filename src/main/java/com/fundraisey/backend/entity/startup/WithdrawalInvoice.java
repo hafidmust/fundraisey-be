@@ -25,7 +25,7 @@ public class WithdrawalInvoice {
 
     @Column(name = "payment_date", nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+    @JsonFormat(pattern="dd-MM-yyyy'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @CreationTimestamp
     private Date paymentDate;
 

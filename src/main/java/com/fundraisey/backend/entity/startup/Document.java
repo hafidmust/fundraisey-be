@@ -18,10 +18,11 @@ public class Document extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = true, name = "url")
+    @Column(nullable = true, name = "url")
     private String url;
 
     @ManyToOne(targetEntity = Credential.class)
     @JoinColumn(name = "id_credential", referencedColumnName = "id")
-    private Credential credentialDocument;
+    @JsonBackReference
+    private Credential credential;
 }

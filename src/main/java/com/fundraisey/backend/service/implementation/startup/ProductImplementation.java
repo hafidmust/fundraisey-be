@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -54,6 +55,7 @@ public class ProductImplementation implements ProductService {
             product.setStartup(startup);
             product.setName(productModel.getName());
             product.setDescription(productModel.getDescription());
+            product.setUrl(productModel.getUrl());
 
             productRepository.save(product);
 
@@ -72,5 +74,19 @@ public class ProductImplementation implements ProductService {
     @Override
     public Map delete(Long productId, Long userId) {
         return null;
+    }
+
+    @Override
+    public Map getAllByStartupId(Long startupId) {
+        try {
+            Startup startup = startupRepository.getById(startupId);
+            if (startup == null) return responseTemplate.notFound("Startup not found");
+            List<Product> products = productRepository.findByStartup(startup);
+
+            return responseTemplate.success(products);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e.getLocalizedMessage());
+        }
     }
 }

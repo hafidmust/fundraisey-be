@@ -18,10 +18,11 @@ public class ProductPhoto extends DateProps implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = true, name = "url")
+    @Column(nullable = true, name = "url")
     private String url;
 
     @ManyToOne(targetEntity = Product.class)
     @JoinColumn(name = "id_product", referencedColumnName = "id")
+    @JsonBackReference
     private Product product;
 }

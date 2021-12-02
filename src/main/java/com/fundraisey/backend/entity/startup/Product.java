@@ -34,6 +34,7 @@ public class Product extends DateProps implements Serializable {
     @JsonBackReference
     private Startup startup;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     List<ProductPhoto> productPhotos;
 }
