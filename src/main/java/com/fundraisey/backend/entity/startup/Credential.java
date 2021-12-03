@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -17,6 +18,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "credential")
+@Where(clause = "deleted_at is null")
 public class Credential extends DateProps implements Serializable {
     @Id
     @Column(name = "id")

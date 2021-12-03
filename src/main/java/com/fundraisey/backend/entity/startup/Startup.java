@@ -8,6 +8,7 @@ import com.fundraisey.backend.entity.DateProps;
 import com.fundraisey.backend.entity.auth.User;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "startup")
+@Where(clause = "deleted_at is null")
 // field table = name, description, logo, phoneNumber, web, address, bornDate
 // foreign key userID
 public class Startup extends DateProps implements Serializable {
