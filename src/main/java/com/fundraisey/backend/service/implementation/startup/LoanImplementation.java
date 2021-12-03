@@ -165,8 +165,7 @@ public class LoanImplementation implements LoanService {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-//            loans = loanRepository.findByStatus(LoanStatus.accepted, pageable);
-            loans = loanRepository.getAcceptedLoanByNameContainingOrStartupNameContaining(search, pageable);
+            loans = loanRepository.getAcceptedAndUnfinishedLoanByNameContainingOrStartupNameContaining(search, pageable);
             for (Loan loan : loans.getContent()) {
                 LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 

@@ -24,6 +24,14 @@ public interface LoanRepository extends PagingAndSortingRepository<Loan, Long> {
             "LIKE LOWER(CONCAT('%', :name, '%'))) AND l.status = 'accepted'")
     Page<Loan> getAcceptedLoanByNameContainingOrStartupNameContaining(@Param("name") String name, Pageable pageable);
 
+    @Query(value = "SELECT * FROM loan l INNER JOIN startup s ON l.id_startup = s.id WHERE (LOWER(l.name) LIKE LOWER" +
+            "(CONCAT('%', :name, '%')) OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND l" +
+            ".status = 'accepted' AND l.id IN (SELECT l.id FROM loan l LEFT JOIN transaction t ON l.id = t.loan_id " +
+            "GROUP BY l.id HAVING COALESCE(SUM(t.amount),0) < l.target_value)",
+            nativeQuery = true)
+    Page<Loan> getAcceptedAndUnfinishedLoanByNameContainingOrStartupNameContaining(@Param("name") String name,
+                                                                          Pageable pageable);
+
     Page<Loan> findByStartup(Startup startup, Pageable pageable);
 
     Page<Loan> findByStartupAndNameContainingIgnoreCase(Startup startup, String name, Pageable pageable);
