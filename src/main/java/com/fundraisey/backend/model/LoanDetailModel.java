@@ -11,6 +11,7 @@ import java.util.List;
 public class LoanDetailModel {
     Long id;
     String name;
+    String startupName;
     String description;
     @JsonFormat(pattern = "yyyy-MM-dd")
     Date startDate;

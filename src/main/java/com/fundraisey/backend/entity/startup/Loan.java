@@ -59,7 +59,6 @@ public class Loan extends DateProps implements Serializable {
     @Column(name = "is_withdrawn")
     private boolean withdrawn = false;
 
-    @JsonBackReference
     @ManyToOne(targetEntity = Startup.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_startup", referencedColumnName = "id")
     private Startup startup;
@@ -77,9 +76,11 @@ public class Loan extends DateProps implements Serializable {
     @JsonManagedReference
     private List<LoanComment> loanComment;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "loan")
     private WithdrawalInvoice withdrawalInvoice;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "loan")
     private List<Payment> payment;
 }

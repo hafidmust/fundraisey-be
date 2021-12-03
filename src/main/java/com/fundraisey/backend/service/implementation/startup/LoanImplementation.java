@@ -363,6 +363,7 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setStatus(loan.getStatus().toString());
         loanDetailModel.setLenderCount(lenderCount);
         loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
+        loanDetailModel.setStartupName(loan.getStartup().getName());
 
         return loanDetailModel;
     }

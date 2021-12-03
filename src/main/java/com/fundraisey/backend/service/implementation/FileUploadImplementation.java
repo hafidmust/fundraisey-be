@@ -7,17 +7,11 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
-import com.fundraisey.backend.entity.startup.Credential;
-import com.fundraisey.backend.entity.startup.Document;
-import com.fundraisey.backend.entity.startup.Product;
-import com.fundraisey.backend.entity.startup.ProductPhoto;
+import com.fundraisey.backend.entity.startup.*;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
-import com.fundraisey.backend.repository.startup.CredentialRepository;
-import com.fundraisey.backend.repository.startup.DocumentRepository;
-import com.fundraisey.backend.repository.startup.ProductPhotoRepository;
-import com.fundraisey.backend.repository.startup.ProductRepository;
+import com.fundraisey.backend.repository.startup.*;
 import com.fundraisey.backend.service.interfaces.FileUploadService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.apache.commons.io.FilenameUtils;
@@ -47,6 +41,8 @@ public class FileUploadImplementation implements FileUploadService {
     InvestorVerificationRepository investorVerificationRepository;
     @Autowired
     InvestorRepository investorRepository;
+    @Autowired
+    StartupRepository startupRepository;
 
     @Autowired
     ResponseTemplate responseTemplate;
@@ -99,6 +95,26 @@ public class FileUploadImplementation implements FileUploadService {
             document.setCredential(credential);
             document.setUrl(fileBaseUrl + tempFileName);
             Document saved = documentRepository.save(document);
+
+            return responseTemplate.success(saved);
+        } catch (FileUploadException e) {
+            return responseTemplate.notAllowed(e.getLocalizedMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public Map uploadStartupLogoFile(String email, MultipartFile file) {
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+            if (startup == null) return responseTemplate.notFound("Startup not found");
+
+            String tempFileName = this.upload(file, "logo/");
+
+            startup.setLogo(fileBaseUrl + tempFileName);
+            Startup saved = startupRepository.save(startup);
 
             return responseTemplate.success(saved);
         } catch (FileUploadException e) {
