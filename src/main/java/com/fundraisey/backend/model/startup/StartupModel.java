@@ -18,16 +18,11 @@ public class StartupModel {
     private String phoneNumber;
     private String web;
     private String address;
+    private String email;
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date foundedDate;
-
-    // Social Media
-    private List<SocialMedia> social_medias;
-
-    // Product
-    private List<Product> products;
-
-    // Credential
-    private List<Credential> credentials;
+    private String linkedin;
+    private String instagram;
+    private String youtube;
 }

@@ -106,60 +106,17 @@ public class StartupImplementation implements StartupService {
 
             Startup startup = new Startup();
 
-            startup.setUser(user);
             startup.setName(startupModel.getName());
             startup.setDescription(startupModel.getDescription());
             startup.setPhoneNumber(startupModel.getPhoneNumber());
             startup.setWeb(startupModel.getWeb());
             startup.setAddress(startupModel.getAddress());
             startup.setFoundedDate(startupModel.getFoundedDate());
+            startup.setYoutube(startupModel.getYoutube());
+            startup.setLinkedin(startupModel.getLinkedin());
+            startup.setInstagram(startupModel.getInstagram());
+            startup.setEmail(startupModel.getEmail());
             startupRepository.save(startup);
-
-            if (startupModel.getSocial_medias() != null) {
-                for (SocialMedia indexSocialMedia : startupModel.getSocial_medias()) {
-                    indexSocialMedia.setStartup(startup);
-                    SocialMediaPlatform socialMediaPlatform = socialMediaPlatformRepository.getById(indexSocialMedia.getSocialMediaPlatform().getId());
-                    indexSocialMedia.setSocialMediaPlatform(socialMediaPlatform);
-                    socialMediaRepository.save(indexSocialMedia);
-                }
-
-                startup.setSocialMedias(startupModel.getSocial_medias());
-            }
-
-            if (startupModel.getProducts() != null) {
-                for (Product indexProduct : startupModel.getProducts()) {
-                    indexProduct.setStartup(startup);
-                    productRepository.save(indexProduct);
-
-                    if (indexProduct.getProductPhotos() != null) {
-                        for (ProductPhoto indexProductPhoto : indexProduct.getProductPhotos()) {
-                            indexProductPhoto.setUrl(indexProductPhoto.getUrl());
-                            indexProductPhoto.setProduct(indexProduct);
-                            productPhotoRepository.save(indexProductPhoto);
-                        }
-                    }
-                }
-
-                startup.setProducts(startupModel.getProducts());
-            }
-            if (startupModel.getCredentials() != null) {
-                for (Credential indexCredential : startupModel.getCredentials()) {
-                    indexCredential.setStartup(startup);
-
-                    CredentialType credentialType = credentialTypeRepository.getById(indexCredential.getCredentialType().getId());
-                    indexCredential.setCredentialType(credentialType);
-                    credentialRepository.save(indexCredential);
-
-                    if (indexCredential.getDocuments() != null) {
-                        for (Document indexDocument : indexCredential.getDocuments()) {
-                            indexDocument.setCredential(indexCredential);
-                            documentRepository.save(indexDocument);
-                        }
-                    }
-                }
-
-                startup.setCredentials(startupModel.getCredentials());
-            }
 
             return responseTemplate.success(startup);
         } catch (Exception e) {
@@ -177,68 +134,23 @@ public class StartupImplementation implements StartupService {
                 return responseTemplate.notFound("User not found!");
             }
 
-            Startup startupExist = startupRepository.findByUser(user);
+            Startup startup = startupRepository.findByUser(user);
 
-            if (startupExist == null) return responseTemplate.notFound("Startup not found!");
+            if (startup == null) return responseTemplate.notFound("Startup not found!");
 
-            startupExist.setName(startupModel.getName());
-            startupExist.setDescription(startupModel.getDescription());
-            startupExist.setPhoneNumber(startupModel.getPhoneNumber());
-            startupExist.setWeb(startupModel.getWeb());
-            startupExist.setAddress(startupModel.getAddress());
-            startupExist.setFoundedDate(startupModel.getFoundedDate());
-            startupRepository.save(startupExist);
-
-            if (startupModel.getSocial_medias() != null) {
-                for (SocialMedia indexSocialMedia : startupModel.getSocial_medias()) {
-                    indexSocialMedia.setStartup(startupExist);
-                    SocialMediaPlatform socialMediaPlatform = socialMediaPlatformRepository.getById(indexSocialMedia.getSocialMediaPlatform().getId());
-                    indexSocialMedia.setSocialMediaPlatform(socialMediaPlatform);
-                    socialMediaRepository.save(indexSocialMedia);
-                }
-
-                startupExist.setSocialMedias(startupModel.getSocial_medias());
-            }
-
-            if (startupModel.getProducts() != null) {
-                for (Product indexProduct : startupModel.getProducts()) {
-                    indexProduct.setStartup(startupExist);
-                    productRepository.save(indexProduct);
-
-                    if (indexProduct.getProductPhotos() != null) {
-                        for (ProductPhoto indexProductPhoto : indexProduct.getProductPhotos()) {
-                            indexProductPhoto.setUrl(indexProductPhoto.getUrl());
-                            indexProductPhoto.setProduct(indexProduct);
-                            productPhotoRepository.save(indexProductPhoto);
-                        }
-                    }
-                }
-
-                startupExist.setProducts(startupModel.getProducts());
-            }
-            if (startupModel.getCredentials() != null) {
-                for (Credential indexCredential : startupModel.getCredentials()) {
-                    indexCredential.setStartup(startupExist);
-
-                    CredentialType credentialType = credentialTypeRepository.getById(indexCredential.getCredentialType().getId());
-                    indexCredential.setCredentialType(credentialType);
-                    credentialRepository.save(indexCredential);
-
-                    if (indexCredential.getDocuments() != null) {
-                        for (Document indexDocument : indexCredential.getDocuments()) {
-                            indexDocument.setCredential(indexCredential);
-                            documentRepository.save(indexDocument);
-                        }
-                    }
-                }
-
-                startupExist.setCredentials(startupModel.getCredentials());
-            }
-
-            log.info("Update startup info with startup id {}", startupModel.getId());
+            startup.setName(startupModel.getName());
+            startup.setDescription(startupModel.getDescription());
+            startup.setPhoneNumber(startupModel.getPhoneNumber());
+            startup.setWeb(startupModel.getWeb());
+            startup.setAddress(startupModel.getAddress());
+            startup.setFoundedDate(startupModel.getFoundedDate());
+            startup.setYoutube(startupModel.getYoutube());
+            startup.setLinkedin(startupModel.getLinkedin());
+            startup.setInstagram(startupModel.getInstagram());
+            startup.setEmail(startupModel.getEmail());
+            startupRepository.save(startup);
 
             return responseTemplate.success("Startup is updated!");
-
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());

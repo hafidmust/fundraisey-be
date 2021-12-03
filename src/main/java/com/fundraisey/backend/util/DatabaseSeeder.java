@@ -207,6 +207,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             startup.setPhoneNumber("081234567890");
             startup.setWeb("https://fundraisey.com");
             startup.setUser(user);
+            startup.setEmail("hello@fundraisey.com");
 
             startupRepository.save(startup);
         }
