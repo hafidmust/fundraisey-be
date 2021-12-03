@@ -4,6 +4,7 @@ import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.Loan;
 import com.fundraisey.backend.entity.startup.LoanStatus;
+import com.fundraisey.backend.entity.startup.Payment;
 import com.fundraisey.backend.entity.transaction.*;
 import com.fundraisey.backend.model.TransactionRequestModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
@@ -12,6 +13,7 @@ import com.fundraisey.backend.repository.investor.PaymentAgentRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
 import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.LoanRepository;
+import com.fundraisey.backend.repository.startup.PaymentRepository;
 import com.fundraisey.backend.service.implementation.auth.LoginImplementation;
 import com.fundraisey.backend.service.interfaces.investor.TransactionService;
 import com.fundraisey.backend.util.ResponseTemplate;
@@ -24,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,8 @@ public class TransactionImplementation implements TransactionService {
     @Autowired
     ReturnInstallmentRepository returnInstallmentRepository;
     @Autowired
+    PaymentRepository paymentRepository;
+    @Autowired
     SimpleStringUtils simpleStringUtils;
 
     Logger logger = LoggerFactory.getLogger(LoginImplementation.class);
@@ -54,17 +57,20 @@ public class TransactionImplementation implements TransactionService {
     @Override
     public Map insert(String email, TransactionRequestModel transactionRequestModel) {
         try {
+            Loan loan = loanRepository.getById(transactionRequestModel.getLoanId());
+            if (loan == null) return responseTemplate.notFound("Loan not found");
+            Calendar calendar = Calendar.getInstance();
+            Integer timeComparison = calendar.getTime().compareTo(loan.getEndDate());
+            if (timeComparison == 1) return responseTemplate.notAllowed("Funding period is over");
+
             if (transactionRequestModel.getAmount() <= 0) return responseTemplate.notAllowed("Transaction amount " +
                     "can't be 0 or less");
-            Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DATE, 5);
             Date paymentDeadline = calendar.getTime();
 
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
             if (investor == null) return responseTemplate.notFound("Investor not found");
-            Loan loan = loanRepository.getById(transactionRequestModel.getLoanId());
-            if (loan == null) return responseTemplate.notFound("Loan not found");
             if (loan.getStatus() == LoanStatus.pending) return responseTemplate.notAllowed("Loan acceptance pending");
             if (loan.getStatus() == LoanStatus.rejected) return responseTemplate.notAllowed("Loan acceptance rejected");
             if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
@@ -140,26 +146,16 @@ public class TransactionImplementation implements TransactionService {
         Float amountReturned =
                 (transaction.getAmount().floatValue() +
                         (transaction.getAmount().floatValue() * interestRate / 100)) / totalReturnPeriod;
-        String paymentPlan = transaction.getLoan().getPaymentPlan().getName();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(transaction.getLoan().getEndDate());
         for (Integer period = 1; period <= totalReturnPeriod; period++) {
+            Payment payment = paymentRepository.getByLoanIdAndPeriod(transaction.getLoan().getId(), period);
+
             ReturnInstallment returnInstallment = new ReturnInstallment();
-            if (period == 1) {
-                calendar.add(Calendar.YEAR, 2);
-                returnInstallment.setReturnDate(calendar.getTime());
-            } else if (totalReturnPeriod == 2) {
-                calendar.add(Calendar.YEAR, 1);
-                returnInstallment.setReturnDate(calendar.getTime());
-            } else if (totalReturnPeriod == 4) {
-                calendar.add(Calendar.MONTH, 6);
-                returnInstallment.setReturnDate(calendar.getTime());
-            }
+            returnInstallment.setPayment(payment);
             returnInstallment.setTransaction(transaction);
-            returnInstallment.setReturnPeriod(period);
             returnInstallment.setReturnStatus(ReturnStatus.unpaid);
-            returnInstallment.setTotalReturnPeriod(totalReturnPeriod);
             returnInstallment.setAmount(amountReturned.longValue());
 
             returnInstallmentRepository.save(returnInstallment);

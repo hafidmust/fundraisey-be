@@ -1,5 +1,6 @@
 package com.fundraisey.backend.entity.startup;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fundraisey.backend.entity.investor.BankAccount;
 import com.fundraisey.backend.entity.transaction.ReturnInstallment;
@@ -23,6 +24,7 @@ public class PaymentInvoice implements Serializable {
 
     @OneToOne(targetEntity = ReturnInstallment.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "return_installment_id", referencedColumnName = "id")
+    @JsonBackReference
     private ReturnInstallment returnInstallment;
 
     @Column(name = "payment_date")

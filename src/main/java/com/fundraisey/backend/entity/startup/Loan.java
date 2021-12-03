@@ -79,4 +79,7 @@ public class Loan extends DateProps implements Serializable {
 
     @OneToOne(mappedBy = "loan")
     private WithdrawalInvoice withdrawalInvoice;
+
+    @OneToMany(mappedBy = "loan")
+    private List<Payment> payment;
 }

@@ -2,6 +2,9 @@ package com.fundraisey.backend.entity.transaction;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fundraisey.backend.entity.startup.Payment;
+import com.fundraisey.backend.entity.startup.PaymentInvoice;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,27 +28,25 @@ public class ReturnInstallment implements Serializable {
     @JoinColumn(name = "transaction_id", referencedColumnName = "id")
     private Transaction transaction;
 
-    @Column(name = "return_period")
-    private Integer returnPeriod;
-
-    @Column(name = "total_return_period")
-    private Integer totalReturnPeriod;
-
-    @Column(name = "return_date")
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern="yyyy-MM-dd")
-    private Date returnDate;
-
     @Column(name = "amount")
     private Long amount;
 
     @Column(name = "is_withdrawn")
     private boolean withdrawn = false;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "return_status")
     private ReturnStatus returnStatus;
 
     @OneToOne(mappedBy = "returnInstallment")
     private ReturnInvoice returnInvoice;
+
+    @OneToOne(mappedBy = "returnInstallment")
+    @JsonManagedReference
+    private PaymentInvoice paymentInvoice;
+
+    @OneToOne(targetEntity = Payment.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    @JsonManagedReference
+    private Payment payment;
 }
