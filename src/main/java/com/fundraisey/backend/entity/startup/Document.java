@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fundraisey.backend.entity.DateProps;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 @Setter
 @Entity
 @Table(name = "document")
+@Where(clause = "deleted_at is null")
 public class Document extends DateProps implements Serializable {
     @Id
     @Column(name = "id")
