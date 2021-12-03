@@ -31,8 +31,14 @@ public class InvestorLoanController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
     @PostMapping("/withdraw")
-    ResponseEntity<Map> withdraw(@RequestBody InvestorLoanModel investorLoanModel) {
-        Map response = returnInstallmentService.withdraw(investorLoanModel.getReturnId());
+    ResponseEntity<Map> withdraw(@RequestBody InvestorLoanModel investorLoanModel, Principal principal) {
+        Map response = returnInstallmentService.withdraw(principal.getName(), investorLoanModel.getReturnId());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+    @PostMapping("/withdraw-all")
+    ResponseEntity<Map> withdrawAll(Principal principal) {
+        Map response = returnInstallmentService.withdrawAll(principal.getName());
 
         return responseTemplate.controllerHttpRestResponse(response);
     }

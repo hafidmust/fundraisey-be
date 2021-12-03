@@ -34,7 +34,7 @@ public class ReturnInstallment implements Serializable {
     @Column(name = "is_withdrawn")
     private boolean withdrawn = false;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "return_status")
     private ReturnStatus returnStatus;
 
@@ -42,6 +42,7 @@ public class ReturnInstallment implements Serializable {
     private ReturnInvoice returnInvoice;
 
     @OneToOne(mappedBy = "returnInstallment")
+    @JsonManagedReference
     private PaymentInvoice paymentInvoice;
 
     @OneToOne(targetEntity = Payment.class, cascade = CascadeType.ALL)

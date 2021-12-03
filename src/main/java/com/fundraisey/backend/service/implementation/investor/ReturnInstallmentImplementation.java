@@ -117,9 +117,14 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
     }
 
     @Override
-    public Map withdraw(Long returnInstallmentId) {
+    public Map withdraw(String email, Long returnInstallmentId) {
         try {
+            User user = userRepository.findOneByEmail(email);
+
             ReturnInstallment returnInstallment = returnInstallmentRepository.getById(returnInstallmentId);
+            if (user.getId() != returnInstallment.getTransaction().getInvestor().getUser().getId())
+                return responseTemplate.notAllowed("Not the owner of return installment");
+
 
             if (returnInstallment.getReturnStatus() != ReturnStatus.paid) return responseTemplate.notAllowed("Not returned yet");
             if (returnInstallment.isWithdrawn()) return responseTemplate.notAllowed("Already withdrawn");
@@ -133,6 +138,46 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
             returnInstallment.setWithdrawn(true);
             ReturnInstallment saved = returnInstallmentRepository.save(returnInstallment);
             return responseTemplate.success(saved);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+
+    }
+
+    @Override
+    public Map withdrawAll(String email) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            List<ReturnInstallment> returnInstallments =
+                    returnInstallmentRepository.getAllPaidAndNotWithdrawnReturnByUserEmail(email);
+            if (returnInstallments.size() == 0) return responseTemplate.notFound("Nothing to withdraw");
+
+            Integer withdrawSuccessCount = 0;
+            Integer withdrawFailCount = 0;
+            Long withdrawSum = 0L;
+
+            for (ReturnInstallment returnInstallment : returnInstallments) {
+                if (returnInstallment.getReturnStatus() != ReturnStatus.paid) withdrawFailCount++;
+                if (returnInstallment.isWithdrawn()) withdrawFailCount++;
+
+                ReturnInvoice returnInvoice = new ReturnInvoice();
+                returnInvoice.setAmount(returnInstallment.getAmount());
+                returnInvoice.setPaymentDate(new Date());
+                returnInvoice.setReturnInstallment(returnInstallment);
+
+                returnInvoiceRepository.save(returnInvoice);
+                returnInstallment.setWithdrawn(true);
+                ReturnInstallment saved = returnInstallmentRepository.save(returnInstallment);
+                withdrawSuccessCount++;
+                withdrawSum = withdrawSum + returnInstallment.getAmount();
+            }
+            response.put("withdraw success count", withdrawSuccessCount);
+            response.put("withdraw fail count", withdrawFailCount);
+            response.put("total withdrawn", withdrawSum);
+
+            return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
