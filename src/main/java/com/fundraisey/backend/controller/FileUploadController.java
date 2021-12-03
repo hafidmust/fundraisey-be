@@ -4,6 +4,7 @@ import com.fundraisey.backend.service.interfaces.FileUploadService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class FileUploadController {
     @Autowired
     ResponseTemplate responseTemplate;
 
+    @Secured("ROLE_STARTUP")
     @PostMapping("/startup/product/{productId}")
     public ResponseEntity<Map> uploadProductFile(@PathVariable Long productId,
                                                  @RequestParam(value = "file") MultipartFile file,
@@ -31,6 +33,7 @@ public class FileUploadController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
+    @Secured("ROLE_STARTUP")
     @PostMapping("/startup/credential/{credentialId}")
     public ResponseEntity<Map> uploadCredentialFile(@PathVariable Long credentialId,
                                                  @RequestParam(value = "file") MultipartFile file,
@@ -40,6 +43,16 @@ public class FileUploadController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
+    @Secured("ROLE_STARTUP")
+    @PostMapping("/startup/logo")
+    public ResponseEntity<Map> uploadStartupLogoFile(@RequestParam(value = "file") MultipartFile file,
+                                                Principal principal) {
+        Map response = fileUploadService.uploadStartupLogoFile(principal.getName(), file);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @Secured("ROLE_INVESTOR")
     @PostMapping("/investor/citizen-id")
     public ResponseEntity<Map> uploadCitizenIdFile(@RequestParam(value = "file") MultipartFile file,
                                                     Principal principal) {
@@ -48,6 +61,7 @@ public class FileUploadController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
+    @Secured("ROLE_INVESTOR")
     @PostMapping("/investor/selfie")
     public ResponseEntity<Map> uploadSelfieFile(@RequestParam(value = "file") MultipartFile file,
                                                    Principal principal) {

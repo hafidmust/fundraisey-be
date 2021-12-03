@@ -33,7 +33,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(columnDefinition = "TEXT", nullable = true, name = "description")
     private String description;
 
-    @Column(length = 100, nullable = true, name = "logo")
+    @Column(nullable = true, name = "logo")
     private String logo;
 
     @Column(length = 100, nullable = true, name = "phone_number")
@@ -45,7 +45,7 @@ public class Startup extends DateProps implements Serializable {
     @Column(columnDefinition = "TEXT", nullable = true, name = "address")
     private String address;
 
-    @Column(length = 100, nullable = true, name = "born_date")
+    @Column(nullable = true, name = "born_date")
     @Temporal(TemporalType.DATE)
     @JsonFormat(pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -58,7 +58,6 @@ public class Startup extends DateProps implements Serializable {
 
     @JsonIgnore
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Loan> loans;
 
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
