@@ -1,5 +1,6 @@
 package com.fundraisey.backend.repository.investor;
 
+import com.fundraisey.backend.entity.startup.Payment;
 import com.fundraisey.backend.entity.transaction.ReturnInstallment;
 import com.fundraisey.backend.entity.transaction.ReturnStatus;
 import com.fundraisey.backend.entity.transaction.Transaction;
@@ -12,19 +13,21 @@ import java.util.List;
 
 @Repository
 public interface ReturnInstallmentRepository extends PagingAndSortingRepository<ReturnInstallment, Long> {
-    @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId and r.returnPeriod = " +
-            ":period")
+    @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId AND r" +
+            ".payment.returnPeriod = :period")
     Long getAmountSumByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
 
-    ReturnInstallment findOneByTransactionAndReturnPeriod(Transaction transaction, Integer returnPeriod);
+//    ReturnInstallment findOneByTransactionAndReturnPeriod(Transaction transaction, Integer returnPeriod);
+
+    ReturnInstallment findOneByTransactionAndPayment(Transaction transaction, Payment payment);
 
     List<ReturnInstallment> findByTransactionOrderByIdAsc(Transaction transaction);
 
     @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.transaction.investor.id = :investorId")
     Long getAmountSumByInvestorId(@Param("investorId") Long investorId);
 
-    @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId and r.returnPeriod = :period")
-    ReturnInstallment getByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
+    @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.loan.id = :loanId and r.payment.returnPeriod = :period")
+    List<ReturnInstallment> getByLoanIdAndPeriod(@Param("loanId") Long loanId, @Param("period") Integer period);
 
     @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.investor.id = :investorId ORDER BY id ASC")
     List<ReturnInstallment> getByTransactionInvestorIdDesc(@Param("investorId") Long investorId);

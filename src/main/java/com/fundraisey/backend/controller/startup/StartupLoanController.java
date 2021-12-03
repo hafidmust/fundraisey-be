@@ -28,7 +28,7 @@ public class StartupLoanController {
 
     @PostMapping("/pay")
     ResponseEntity<Map> pay(@RequestBody StartupLoanRequestModel startupLoanRequestModel, Principal principal) {
-        Map response = loanService.pay(principal.getName(), startupLoanRequestModel.getLoanId(),
+        Map response = loanService.payInvestor(principal.getName(), startupLoanRequestModel.getLoanId(),
                 startupLoanRequestModel.getPeriod());
 
         return responseTemplate.controllerHttpRestResponse(response);

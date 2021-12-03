@@ -44,9 +44,12 @@ public class LoanImplementation implements LoanService {
     PaymentInvoiceRepository paymentInvoiceRepository;
     @Autowired
     WithdrawalInvoiceRepository withdrawalInvoiceRepository;
+    @Autowired
+    PaymentRepository paymentRepository;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
+            // Validation
             if (loanRequestModel.getTitle() == null || loanRequestModel.getTitle().equals(""))
                 return responseTemplate.isRequired("Title required");
             if (loanRequestModel.getTargetValue() == null || loanRequestModel.getTargetValue().equals(""))
@@ -62,6 +65,7 @@ public class LoanImplementation implements LoanService {
             Startup startup = startupRepository.findByUser(user);
             PaymentPlan paymentPlan = paymentPlanRepository.getById(loanRequestModel.getPaymentPlanId());
 
+            // Create new loan
             Loan loan = new Loan();
 
             loan.setStartup(startup);
@@ -74,6 +78,7 @@ public class LoanImplementation implements LoanService {
             loan.setPaymentPlan(paymentPlan);
             loan.setStatus(LoanStatus.pending);
 
+            // Add total return period
             if (paymentPlan == null) return responseTemplate.notFound("Payment plan not found");
             if (paymentPlan.getName().equals("cash")) {
                 loan.setTotalReturnPeriod(1);
@@ -86,6 +91,27 @@ public class LoanImplementation implements LoanService {
             }
 
             Loan loanObj = loanRepository.save(loan);
+
+            // Add payment list
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(loanObj.getEndDate());
+            for (Integer period = 1; period <= loanObj.getTotalReturnPeriod(); period++) {
+                Payment payment = new Payment();
+                payment.setLoan(loanObj);
+                payment.setReturnPeriod(period);
+                payment.setStatus(ReturnStatus.unpaid);
+                if (period == 1) {
+                    calendar.add(Calendar.YEAR, 2);
+                    payment.setReturnDate(calendar.getTime());
+                } else if (loanObj.getTotalReturnPeriod() == 2) {
+                    calendar.add(Calendar.YEAR, 1);
+                    payment.setReturnDate(calendar.getTime());
+                } else if (loanObj.getTotalReturnPeriod() == 4) {
+                    calendar.add(Calendar.MONTH, 6);
+                    payment.setReturnDate(calendar.getTime());
+                }
+                paymentRepository.save(payment);
+            }
 
             return responseTemplate.success(loanObj);
         } catch (Exception e) {
@@ -169,32 +195,46 @@ public class LoanImplementation implements LoanService {
     }
 
     @Override
-    public Map pay(String email, Long loanId, Integer period) {
+    public Map payInvestor(String email, Long loanId, Integer period) {
+        Map<String, Object> response = new HashMap<>();
         try {
             Startup startup = startupRepository.getByUserEmail(email);
             Loan loan = loanRepository.getById(loanId);
-
+            if (loan == null) return responseTemplate.notFound("Loan not found");
             if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
+            Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
 
-            ReturnInstallment returnInstallment =
+            List<ReturnInstallment> returnInstallments =
                     returnInstallmentRepository.getByLoanIdAndPeriod(loanId, period);
-            if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
-                return responseTemplate.notAllowed("Already paid");
-            } else if (returnInstallment.getReturnStatus() != ReturnStatus.paid) {
-                // Create startup's payment invoice
-                PaymentInvoice paymentInvoice = new PaymentInvoice();
-                paymentInvoice.setPaymentDate(new Date());
-                paymentInvoice.setReturnInstallment(returnInstallment);
-                paymentInvoice.setAmount(returnInstallment.getAmount());
-                paymentInvoiceRepository.save(paymentInvoice);
+            Integer paidCount = 0;
+            Long paymentSum = 0L;
+            for (ReturnInstallment returnInstallment : returnInstallments) {
+                if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
+                    continue;
+                } else if (returnInstallment.getReturnStatus() != ReturnStatus.paid) {
+                    // Create startup's payment invoice
+                    PaymentInvoice paymentInvoice = new PaymentInvoice();
+                    paymentInvoice.setPaymentDate(new Date());
+                    paymentInvoice.setReturnInstallment(returnInstallment);
+                    paymentInvoice.setAmount(returnInstallment.getAmount());
+                    paymentInvoiceRepository.save(paymentInvoice);
 
-                // Change return installment status to paid
-                returnInstallment.setReturnStatus(ReturnStatus.paid);
-                returnInstallmentRepository.save(returnInstallment);
+                    // Change return installment status to paid
+                    returnInstallment.setReturnStatus(ReturnStatus.paid);
+                    returnInstallmentRepository.save(returnInstallment);
+                    paidCount++;
+                    paymentSum = paymentSum + returnInstallment.getAmount();
+                }
             }
 
-            return responseTemplate.success(null);
+            payment.setStatus(ReturnStatus.paid);
+            Payment saved = paymentRepository.save(payment);
 
+            response.put("paid transaction count", paidCount);
+            response.put("unpaid transaction count", returnInstallments.size() - paidCount);
+            response.put("payment sum", paymentSum);
+            response.put("paymentData", payment);
+            return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
@@ -216,52 +256,45 @@ public class LoanImplementation implements LoanService {
     private List<StartupPaymentListModel> createPaymentList(Long loanId) {
         Loan loan = loanRepository.getById(loanId);
         Integer totalReturnPeriod = loan.getTotalReturnPeriod();
-        List<StartupPaymentListModel> paymentList = new ArrayList<>();
+        List<Payment> payments = paymentRepository.getByLoanId(loanId);
+        List<StartupPaymentListModel> paymentListModel = new ArrayList<>();
 
         // Create payment date(s)
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(loan.getEndDate());
         for (Integer period = 1; period <= totalReturnPeriod; period++) {
-            StartupPaymentListModel payment = new StartupPaymentListModel();
-            payment.setPeriod(period);
-            if (period == 1) {
-                calendar.add(Calendar.YEAR, 2);
-                payment.setReturnDate(calendar.getTime());
-            } else if (totalReturnPeriod == 2) {
-                calendar.add(Calendar.YEAR, 1);
-                payment.setReturnDate(calendar.getTime());
-            } else if (totalReturnPeriod == 4) {
-                calendar.add(Calendar.MONTH, 6);
-                payment.setReturnDate(calendar.getTime());
-            }
+            Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+            StartupPaymentListModel paymentModel = new StartupPaymentListModel();
+            paymentModel.setPeriod(period);
+            paymentModel.setReturnDate(payment.getReturnDate());
 
             Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
 
             if (totalAmount == null) totalAmount = 0L;
-            payment.setTotalAmount(totalAmount);
+            paymentModel.setTotalAmount(totalAmount);
 
             if (loan.getTransactions().size() != 0) {
                 ReturnInstallment returnInstallment =
-                        returnInstallmentRepository.findOneByTransactionAndReturnPeriod(loan.getTransactions().get(0)
-                                , period);
+                        returnInstallmentRepository.findOneByTransactionAndPayment(loan.getTransactions().get(0)
+                                , payment);
 
                 if (returnInstallment == null) {
-                    payment.setPaid(false);
+                    paymentModel.setPaid(false);
                 } else {
                     if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
-                        payment.setPaid(true);
+                        paymentModel.setPaid(true);
                     } else {
-                        payment.setPaid(false);
+                        paymentModel.setPaid(false);
                     }
                 }
             } else {
-                payment.setPaid(false);
+                paymentModel.setPaid(false);
             }
 
-            paymentList.add(payment);
+            paymentListModel.add(paymentModel);
         }
 
-        return paymentList;
+        return paymentListModel;
     }
 
     @Override
