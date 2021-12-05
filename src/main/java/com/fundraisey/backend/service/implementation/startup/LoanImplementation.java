@@ -183,6 +183,7 @@ public class LoanImplementation implements LoanService {
     public Map getById(Long id) {
         try {
             Loan loan = loanRepository.getById(id);
+            if (loan == null) return responseTemplate.notFound("Loan not found");
 
             LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
 
