@@ -156,7 +156,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             String bankName = str[0];
             String bankCode = str[1];
 
-            Bank bankObj = bankRepository.findOneByName("bankName");
+            Bank bankObj = bankRepository.findOneByName(bankName);
             if (bankObj == null) {
                 bankObj = new Bank();
                 bankObj.setName(bankName);
