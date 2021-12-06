@@ -8,6 +8,7 @@ import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.service.interfaces.investor.InvestorService;
 import com.fundraisey.backend.util.ResponseTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,30 +41,32 @@ public class InvestorImplementation implements InvestorService {
     @Override
     public Map getByEmail(String email) {
         try {
-            UserModel userModel = new UserModel();
+            InvestorModel investorModel = new InvestorModel();
 
             User user = userRepository.findOneByEmail(email);
 
             Investor investor = investorRepository.getByUserId(user.getId());
 
-            userModel.setId(user.getId());
-            userModel.setEmail(user.getEmail());
+            investorModel.setId(user.getId());
+            investorModel.setEmail(user.getEmail());
 
             if (investor != null) {
-                userModel.setCitizenID(investor.getCitizenID());
-                userModel.setFullName(investor.getFullName());
-                userModel.setPhoneNumber(investor.getPhoneNumber());
-                userModel.setGender(investor.getGender());
-                userModel.setDateOfBirth(investor.getDateOfBirth());
+                investorModel.setCitizenID(investor.getCitizenID());
+                investorModel.setFullName(investor.getFullName());
+                investorModel.setPhoneNumber(investor.getPhoneNumber());
+                investorModel.setGender(investor.getGender());
+                investorModel.setDateOfBirth(investor.getDateOfBirth());
+                investorModel.setBankAccountNumber(investor.getBankAccountNumber());
             } else {
-                userModel.setCitizenID(null);
-                userModel.setFullName(null);
-                userModel.setPhoneNumber(null);
-                userModel.setGender(null);
-                userModel.setDateOfBirth(null);
+                investorModel.setCitizenID(null);
+                investorModel.setFullName(null);
+                investorModel.setPhoneNumber(null);
+                investorModel.setGender(null);
+                investorModel.setDateOfBirth(null);
+                investorModel.setBankAccountNumber(null);
             }
 
-            return responseTemplate.success(userModel);
+            return responseTemplate.success(investorModel);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
@@ -80,11 +83,15 @@ public class InvestorImplementation implements InvestorService {
             investor.setUser(user);
         }
 
+        if (!StringUtils.isNumericSpace(investorModel.getBankAccountNumber())) return responseTemplate.notAllowed(
+                "Bank account number is not numerical string");
+
         investor.setCitizenID(investorModel.getCitizenID());
         investor.setFullName(investorModel.getFullName());
         investor.setPhoneNumber(investorModel.getPhoneNumber());
         investor.setGender(investorModel.getGender());
         investor.setDateOfBirth(investorModel.getDateOfBirth());
+        investor.setBankAccountNumber(investorModel.getBankAccountNumber());
 
         investorRepository.save(investor);
 

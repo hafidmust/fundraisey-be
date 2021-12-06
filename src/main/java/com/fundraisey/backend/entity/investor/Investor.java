@@ -54,6 +54,9 @@ public class Investor extends DateProps implements Serializable {
     @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "bank_account_number")
+    private String bankAccountNumber;
+
     @JsonIgnore
     @OneToMany(mappedBy = "investor")
     private List<BankAccount> bankAccounts;

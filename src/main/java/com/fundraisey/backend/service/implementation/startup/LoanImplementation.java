@@ -8,6 +8,7 @@ import com.fundraisey.backend.entity.transaction.ReturnStatus;
 import com.fundraisey.backend.model.LoanDetailModel;
 import com.fundraisey.backend.model.LoanRequestModel;
 import com.fundraisey.backend.model.StartupPaymentListModel;
+import com.fundraisey.backend.model.StartupWithdrawRequestModel;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
@@ -15,12 +16,14 @@ import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.*;
 import com.fundraisey.backend.service.interfaces.startup.LoanService;
 import com.fundraisey.backend.util.ResponseTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
 
 import java.util.*;
 
@@ -46,6 +49,8 @@ public class LoanImplementation implements LoanService {
     WithdrawalInvoiceRepository withdrawalInvoiceRepository;
     @Autowired
     PaymentRepository paymentRepository;
+    @Autowired
+    BankRepository bankRepository;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
@@ -298,13 +303,23 @@ public class LoanImplementation implements LoanService {
     }
 
     @Override
-    public Map withdraw(String email, Long loanId) {
+    public Map withdraw(String email, StartupWithdrawRequestModel withdrawRequestModel) {
         try {
+            if (withdrawRequestModel.getLoanId() == null) return responseTemplate.isRequired("Please insert loan id");
+            if (withdrawRequestModel.getBankId() == null) return responseTemplate.isRequired("Please insert bank id");
+            if (withdrawRequestModel.getAccountNumber() == null) return responseTemplate.isRequired("Please insert " +
+                    "account number");
+            if (!StringUtils.isNumericSpace(withdrawRequestModel.getAccountNumber()))
+                return responseTemplate.notAllowed("Account value is not numeric");
+
+            Bank bank = bankRepository.getById(withdrawRequestModel.getBankId());
+            if (bank == null) return responseTemplate.notFound("Bank not found");
+
             Startup startup = startupRepository.getByUserEmail(email);
-            Loan loan = loanRepository.getById(loanId);
+            Loan loan = loanRepository.getById(withdrawRequestModel.getLoanId());
             if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
 
-            Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loanId);
+            Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(withdrawRequestModel.getLoanId());
             if (currentValue == null) return responseTemplate.notAllowed("Nothing to withdraw");
 
             Date currentDate = new Date();
@@ -320,10 +335,11 @@ public class LoanImplementation implements LoanService {
             withdrawalInvoice.setLoan(loan);
             withdrawalInvoice.setPaymentDate(new Date());
             withdrawalInvoice.setAmount(currentValue);
+            withdrawalInvoice.setBank(bank);
+            withdrawalInvoice.setAccountNumber(withdrawalInvoice.getAccountNumber());
 
             WithdrawalInvoice savedWithdrawalInvoice = withdrawalInvoiceRepository.save(withdrawalInvoice);
             loan.setWithdrawn(true);
-
 
             return responseTemplate.success(savedWithdrawalInvoice);
 
@@ -340,6 +356,19 @@ public class LoanImplementation implements LoanService {
             List<WithdrawalInvoice> withdrawals = withdrawalInvoiceRepository.getByStartupId(startup.getId());
 
             return responseTemplate.success(withdrawals);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
+    @Override
+    public Map getBankList() {
+        try {
+            List<Bank> banks = bankRepository.findAll();;
+            if (banks == null) return responseTemplate.notFound("Not found");
+
+            return responseTemplate.success(banks);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);

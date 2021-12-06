@@ -12,6 +12,7 @@ public class InvestorModel {
     private String citizenID;
     private String fullName;
     private String phoneNumber;
+    private String bankAccountNumber;
     private Gender gender;
     private Date dateOfBirth;
 }

@@ -71,6 +71,8 @@ public class DatabaseSeeder implements ApplicationRunner {
     private SocialMediaPlatformRepository socialMediaPlatformRepository;
     @Autowired
     private StartupNotificationTypeRepository startupNotificationTypeRepository;
+    @Autowired
+    private BankRepository bankRepository;
 
     private String defaultPassword = "password";
 
@@ -124,6 +126,11 @@ public class DatabaseSeeder implements ApplicationRunner {
             "per6months"
     };
 
+    private String[] banks = new String[] {
+            "BCA:014",
+            "Mandiri:008"
+    };
+
     @Override
     @Transactional
     public void run(ApplicationArguments applicationArguments) {
@@ -139,6 +146,24 @@ public class DatabaseSeeder implements ApplicationRunner {
         this.insertStartup();
         this.insertPaymentPlans();
         this.insertStartupNotificationTypes();
+        this.insertBanks();
+    }
+
+    @Transactional
+    private void insertBanks() {
+        for (String bank : banks) {
+            String[] str = bank.split(":");
+            String bankName = str[0];
+            String bankCode = str[1];
+
+            Bank bankObj = bankRepository.findOneByName(bankName);
+            if (bankObj == null) {
+                bankObj = new Bank();
+                bankObj.setName(bankName);
+                bankObj.setBankCode(bankCode);
+                bankRepository.save(bankObj);
+            }
+        }
     }
 
     @Transactional
@@ -174,6 +199,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             investor.setProfilePicture("https://via.placeholder.com/150/0000FF/808080?text=Investor");
             investor.setGender(Gender.male);
             investor.setUser(user);
+            investor.setBankAccountNumber("0123456789");
 
             Investor saved = investorRepository.save(investor);
 
