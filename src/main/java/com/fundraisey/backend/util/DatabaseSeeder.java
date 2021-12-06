@@ -199,6 +199,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             investor.setProfilePicture("https://via.placeholder.com/150/0000FF/808080?text=Investor");
             investor.setGender(Gender.male);
             investor.setUser(user);
+            investor.setBankAccountNumber("0123456789");
 
             Investor saved = investorRepository.save(investor);
 
