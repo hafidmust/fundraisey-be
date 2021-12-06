@@ -122,6 +122,7 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
             User user = userRepository.findOneByEmail(email);
 
             ReturnInstallment returnInstallment = returnInstallmentRepository.getById(returnInstallmentId);
+            if (returnInstallment == null) return responseTemplate.notFound("No return installment found");
             if (user.getId() != returnInstallment.getTransaction().getInvestor().getUser().getId())
                 return responseTemplate.notAllowed("Not the owner of return installment");
 

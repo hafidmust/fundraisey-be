@@ -31,4 +31,11 @@ public class WithdrawalInvoice {
 
     @Column(name = "amount")
     private Long amount;
+
+    @ManyToOne(targetEntity = Bank.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "bank_id", referencedColumnName = "id")
+    private Bank bank;
+
+    @Column(name = "account_number")
+    private String accountNumber;
 }
