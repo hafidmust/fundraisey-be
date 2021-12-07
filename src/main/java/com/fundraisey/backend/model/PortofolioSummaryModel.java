@@ -10,4 +10,5 @@ public class PortofolioSummaryModel {
     Long totalReturn;
     Long upcomingReturn;
     Integer loanTransactionCount;
+    Long balance;
 }

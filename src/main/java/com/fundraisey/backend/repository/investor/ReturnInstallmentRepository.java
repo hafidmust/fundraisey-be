@@ -41,4 +41,8 @@ public interface ReturnInstallmentRepository extends PagingAndSortingRepository<
     @Query("SELECT r FROM ReturnInstallment r WHERE r.transaction.investor.user.email = :email AND r.returnStatus = " +
             "'paid' AND is_withdrawn = false")
     List<ReturnInstallment> getAllPaidAndNotWithdrawnReturnByUserEmail(@Param("email") String email);
+
+    @Query("SELECT SUM(r.amount) FROM ReturnInstallment r WHERE r.transaction.investor.user.email = :email AND r" +
+            ".returnStatus = 'paid' AND is_withdrawn = false")
+    Long getAmountSumOfAllPaidAndNotWithdrawnReturnByUserEmail(@Param("email") String email);
 }
