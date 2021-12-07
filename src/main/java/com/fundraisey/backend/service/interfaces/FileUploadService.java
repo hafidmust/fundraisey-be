@@ -10,4 +10,5 @@ public interface FileUploadService {
     Map uploadInvestorCitizenId(String email, MultipartFile file);
     Map uploadInvestorSelfie(String email, MultipartFile file);
     Map uploadStartupLogoFile(String email, MultipartFile file);
+    Map uploadInvestorPaymentVerification(String email, Long transactionId, MultipartFile file);
 }

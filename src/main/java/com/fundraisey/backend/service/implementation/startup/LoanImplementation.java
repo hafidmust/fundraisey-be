@@ -255,6 +255,17 @@ public class LoanImplementation implements LoanService {
         }
     }
 
+    public Map getPaymentDetail(Long loanId, Integer period) {
+        try {
+            Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+
+            return responseTemplate.success(payment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e);
+        }
+    }
+
     private List<StartupPaymentListModel> createPaymentList(Long loanId) {
         Loan loan = loanRepository.getById(loanId);
         Integer totalReturnPeriod = loan.getTotalReturnPeriod();

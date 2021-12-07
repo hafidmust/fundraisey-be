@@ -8,9 +8,11 @@ import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.entity.startup.*;
+import com.fundraisey.backend.entity.transaction.Transaction;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.InvestorVerificationRepository;
+import com.fundraisey.backend.repository.investor.TransactionRepository;
 import com.fundraisey.backend.repository.startup.*;
 import com.fundraisey.backend.service.interfaces.FileUploadService;
 import com.fundraisey.backend.util.ResponseTemplate;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,6 +46,8 @@ public class FileUploadImplementation implements FileUploadService {
     InvestorRepository investorRepository;
     @Autowired
     StartupRepository startupRepository;
+    @Autowired
+    TransactionRepository transactionRepository;
 
     @Autowired
     ResponseTemplate responseTemplate;
@@ -167,6 +172,31 @@ public class FileUploadImplementation implements FileUploadService {
             InvestorVerification saved = investorVerificationRepository.save(investorVerification);
 
             return responseTemplate.success(saved);
+        } catch (FileUploadException e) {
+            return responseTemplate.notAllowed(e.getLocalizedMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public Map uploadInvestorPaymentVerification(String email, Long transactionId, MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            User user = userRepository.findOneByEmail(email);
+            Investor investor = investorRepository.getByUserId(user.getId());
+            Transaction transaction = transactionRepository.getById(transactionId);
+            if (investor.getId() != transaction.getInvestor().getId())
+                return responseTemplate.notAllowed("Not the owner of the transaction");
+
+            String tempFileName = this.upload(file, "payment/");
+
+            transaction.setPaymentVerificationUrl(fileBaseUrl + tempFileName);
+            Transaction saved = transactionRepository.save(transaction);
+            response.put("url", saved.getPaymentVerificationUrl());
+
+            return responseTemplate.success(response);
         } catch (FileUploadException e) {
             return responseTemplate.notAllowed(e.getLocalizedMessage());
         } catch (Exception e) {
