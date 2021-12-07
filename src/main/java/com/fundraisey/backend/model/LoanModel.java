@@ -1,14 +1,13 @@
 package com.fundraisey.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fundraisey.backend.entity.startup.Startup;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class LoanDetailModel {
+public class LoanModel {
     Long id;
     String name;
     String description;
@@ -22,5 +21,4 @@ public class LoanDetailModel {
     Integer lenderCount;
     String status;
     List<StartupPaymentListModel> paymentList;
-    Startup startup;
 }

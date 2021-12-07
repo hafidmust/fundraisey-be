@@ -5,10 +5,7 @@ import com.fundraisey.backend.entity.investor.Investor;
 import com.fundraisey.backend.entity.startup.*;
 import com.fundraisey.backend.entity.transaction.ReturnInstallment;
 import com.fundraisey.backend.entity.transaction.ReturnStatus;
-import com.fundraisey.backend.model.LoanDetailModel;
-import com.fundraisey.backend.model.LoanRequestModel;
-import com.fundraisey.backend.model.StartupPaymentListModel;
-import com.fundraisey.backend.model.StartupWithdrawRequestModel;
+import com.fundraisey.backend.model.*;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.investor.ReturnInstallmentRepository;
@@ -134,7 +131,7 @@ public class LoanImplementation implements LoanService {
         try {
             User user = userRepository.findOneByEmail(email);
             Startup startup = startupRepository.findByUser(user);
-            List<LoanDetailModel> response = new ArrayList<>();
+            List<LoanModel> response = new ArrayList<>();
 
             if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
@@ -144,9 +141,9 @@ public class LoanImplementation implements LoanService {
 
             loans = loanRepository.findByStartupAndNameContainingIgnoreCase(startup, search,pageable);
             for (Loan loan : loans.getContent()) {
-                LoanDetailModel loanDetailModel = createLoanDetailModel(loan);
+                LoanModel loanModel = createLoanModel(loan);
 
-                response.add(loanDetailModel);
+                response.add(loanModel);
             }
 
             return responseTemplate.success(response);
@@ -393,8 +390,30 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setStatus(loan.getStatus().toString());
         loanDetailModel.setLenderCount(lenderCount);
         loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
-        loanDetailModel.setStartupName(loan.getStartup().getName());
+        loanDetailModel.setStartup(loan.getStartup());
 
         return loanDetailModel;
+    }
+
+    private LoanModel createLoanModel(Loan loan) {
+        Long currentValue = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+        if (currentValue == null) currentValue = 0L;
+        Integer lenderCount = transactionRepository.countOfInvestorByLoanId(loan.getId());
+        if (lenderCount == null) lenderCount = 0;
+
+        LoanModel loanModel = new LoanModel();
+        loanModel.setId(loan.getId());
+        loanModel.setName(loan.getName());
+        loanModel.setDescription(loan.getDescription());
+        loanModel.setStartDate(loan.getStartDate());
+        loanModel.setEndDate(loan.getEndDate());
+        loanModel.setTargetValue(loan.getTargetValue());
+        loanModel.setCurrentValue(currentValue);
+        loanModel.setInterestRate(loan.getInterestRate());
+        loanModel.setStatus(loan.getStatus().toString());
+        loanModel.setLenderCount(lenderCount);
+        loanModel.setPaymentList(createPaymentList(loan.getId()));
+
+        return loanModel;
     }
 }
