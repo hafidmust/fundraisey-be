@@ -70,6 +70,18 @@ public class FileUploadController {
         return responseTemplate.controllerHttpRestResponse(response);
     }
 
+    @Secured("ROLE_INVESTOR")
+    @PostMapping("/investor/payment-verification/{transactionId}")
+    public ResponseEntity<Map> uploadPaymentVerification(
+            @PathVariable Long transactionId,
+            @RequestParam(value = "file") MultipartFile file,
+            Principal principal
+    ) {
+        Map response = fileUploadService.uploadInvestorPaymentVerification(principal.getName(), transactionId,file);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
 //    @PostMapping
 //    public ResponseEntity<Map> upload(@RequestParam(value = "file") MultipartFile file) throws IOException {
 //        Map<String, Object> map = new HashMap<>();
