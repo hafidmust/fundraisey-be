@@ -100,6 +100,8 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
             if (upcomingReturn == null) upcomingReturn = 0L;
             Integer loanTransactionCount = transactionRepository.countOfPaidTransactionByInvestorId(investor.getId());
             if (loanTransactionCount == null) loanTransactionCount = 0;
+            Long balance = returnInstallmentRepository.getAmountSumOfAllPaidAndNotWithdrawnReturnByUserEmail(email);
+            if (balance == null) balance = 0L;
 
             portofolioSummaryModel.setTotalWithdrawn(totalWithdrawn);
             portofolioSummaryModel.setTotalWithdrawnThisMonth(totalWithdrawnThisMonth);
@@ -107,6 +109,7 @@ public class ReturnInstallmentImplementation implements ReturnInstallmentService
             portofolioSummaryModel.setTotalReturn(totalReturn);
             portofolioSummaryModel.setUpcomingReturn(upcomingReturn);
             portofolioSummaryModel.setLoanTransactionCount(loanTransactionCount);
+            portofolioSummaryModel.setBalance(balance);
 
             return responseTemplate.success(portofolioSummaryModel);
 
