@@ -164,6 +164,7 @@ public class RegisterImplementation implements RegisterService {
             investor.setPhoneNumber(registerModel.getPhoneNumber());
             investor.setDateOfBirth(registerModel.getDateOfBirth());
             investor.setGender(registerModel.getGender());
+            investor.setBankAccountNumber(registerModel.getBankAccountNumber());
 
             investorRepository.save(investor);
 
