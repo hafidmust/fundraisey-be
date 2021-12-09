@@ -2,8 +2,9 @@ package com.fundraisey.backend.service.implementation.investor;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.investor.InvestorVerification;
 import com.fundraisey.backend.model.InvestorModel;
-import com.fundraisey.backend.model.UserModel;
+import com.fundraisey.backend.model.InvestorResponseModel;
 import com.fundraisey.backend.repository.investor.InvestorRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
 import com.fundraisey.backend.service.interfaces.investor.InvestorService;
@@ -41,32 +42,35 @@ public class InvestorImplementation implements InvestorService {
     @Override
     public Map getByEmail(String email) {
         try {
-            InvestorModel investorModel = new InvestorModel();
+            InvestorResponseModel investorResponseModel = new InvestorResponseModel();
 
             User user = userRepository.findOneByEmail(email);
 
             Investor investor = investorRepository.getByUserId(user.getId());
+            InvestorVerification investorVerification = investor.getInvestorVerification();
 
-            investorModel.setId(user.getId());
-            investorModel.setEmail(user.getEmail());
+            investorResponseModel.setId(user.getId());
+            investorResponseModel.setEmail(user.getEmail());
 
             if (investor != null) {
-                investorModel.setCitizenID(investor.getCitizenID());
-                investorModel.setFullName(investor.getFullName());
-                investorModel.setPhoneNumber(investor.getPhoneNumber());
-                investorModel.setGender(investor.getGender());
-                investorModel.setDateOfBirth(investor.getDateOfBirth());
-                investorModel.setBankAccountNumber(investor.getBankAccountNumber());
+                investorResponseModel.setCitizenID(investor.getCitizenID());
+                investorResponseModel.setFullName(investor.getFullName());
+                investorResponseModel.setPhoneNumber(investor.getPhoneNumber());
+                investorResponseModel.setGender(investor.getGender());
+                investorResponseModel.setDateOfBirth(investor.getDateOfBirth());
+                investorResponseModel.setBankAccountNumber(investor.getBankAccountNumber());
+                investorResponseModel.setVerified(investorVerification.isVerified());
             } else {
-                investorModel.setCitizenID(null);
-                investorModel.setFullName(null);
-                investorModel.setPhoneNumber(null);
-                investorModel.setGender(null);
-                investorModel.setDateOfBirth(null);
-                investorModel.setBankAccountNumber(null);
+                investorResponseModel.setCitizenID(null);
+                investorResponseModel.setFullName(null);
+                investorResponseModel.setPhoneNumber(null);
+                investorResponseModel.setGender(null);
+                investorResponseModel.setDateOfBirth(null);
+                investorResponseModel.setBankAccountNumber(null);
+                investorResponseModel.setVerified(false);
             }
 
-            return responseTemplate.success(investorModel);
+            return responseTemplate.success(investorResponseModel);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
