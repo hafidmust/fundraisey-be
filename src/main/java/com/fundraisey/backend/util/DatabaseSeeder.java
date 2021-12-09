@@ -121,9 +121,9 @@ public class DatabaseSeeder implements ApplicationRunner {
     };
 
     private String[] paymentPlans = new String[] {
-            "cash",
-            "per1year",
-            "per6months"
+            "cash:10:0:1",
+            "per1year:15:12:2",
+            "per6months:20:6:4"
     };
 
     private String[] banks = new String[] {
@@ -168,13 +168,21 @@ public class DatabaseSeeder implements ApplicationRunner {
 
     @Transactional
     private void insertPaymentPlans() {
-        for (String paymentPlanName : paymentPlans) {
-            PaymentPlan paymentPlan = paymentPlanRepository.findOneByName(paymentPlanName);
-            if (paymentPlan == null) {
-                paymentPlan = new PaymentPlan();
-                paymentPlan.setName(paymentPlanName);
+        for (String paymentPlan : paymentPlans) {
+            String[] str = paymentPlan.split(":");
+            String paymentPlanName = str[0];
+            Float interestRate = Float.parseFloat(str[1]);
+            Integer monthInterval = Integer.parseInt(str[2]);
+            Integer totalPeriod = Integer.parseInt(str[3]);
+            PaymentPlan paymentPlanObj = paymentPlanRepository.findOneByName(paymentPlanName);
+            if (paymentPlanObj == null) {
+                paymentPlanObj = new PaymentPlan();
+                paymentPlanObj.setName(paymentPlanName);
+                paymentPlanObj.setInterestRate(interestRate);
+                paymentPlanObj.setMonthInterval(monthInterval);
+                paymentPlanObj.setTotalPeriod(totalPeriod);
 
-                paymentPlanRepository.save(paymentPlan);
+                paymentPlanRepository.save(paymentPlanObj);
             }
         }
     }

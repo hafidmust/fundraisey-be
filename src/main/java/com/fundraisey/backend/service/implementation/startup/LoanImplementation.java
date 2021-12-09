@@ -58,8 +58,6 @@ public class LoanImplementation implements LoanService {
                 return responseTemplate.isRequired("Target value required");
             if (loanRequestModel.getEndDate() == null || loanRequestModel.getEndDate().equals(""))
                 return responseTemplate.isRequired("End date required");
-            if (loanRequestModel.getInterestRate() == null)
-                return responseTemplate.isRequired("Interest rate required");
             if (loanRequestModel.getPaymentPlanId() == null)
                 return responseTemplate.isRequired("Payment plan id required");
 
@@ -76,21 +74,13 @@ public class LoanImplementation implements LoanService {
             loan.setDescription(loanRequestModel.getDescription());
             loan.setStartDate(new Date());
             loan.setEndDate(loanRequestModel.getEndDate());
-            loan.setInterestRate(loanRequestModel.getInterestRate());
+            loan.setInterestRate(paymentPlan.getInterestRate());
             loan.setPaymentPlan(paymentPlan);
             loan.setStatus(LoanStatus.pending);
 
             // Add total return period
             if (paymentPlan == null) return responseTemplate.notFound("Payment plan not found");
-            if (paymentPlan.getName().equals("cash")) {
-                loan.setTotalReturnPeriod(1);
-            } else if (paymentPlan.getName().equals("1year") || paymentPlan.getName().equals("per1year")) {
-                loan.setTotalReturnPeriod(2);
-            } else if (paymentPlan.getName().equals("6months") || paymentPlan.getName().equals("per6months")) {
-                loan.setTotalReturnPeriod(4);
-            } else {
-                return responseTemplate.notFound("Payment plan not found");
-            }
+            loan.setTotalReturnPeriod(paymentPlan.getTotalPeriod());
 
             Loan loanObj = loanRepository.save(loan);
 
@@ -104,14 +94,10 @@ public class LoanImplementation implements LoanService {
                 payment.setStatus(ReturnStatus.unpaid);
                 if (period == 1) {
                     calendar.add(Calendar.YEAR, 2);
-                    payment.setReturnDate(calendar.getTime());
-                } else if (loanObj.getTotalReturnPeriod() == 2) {
-                    calendar.add(Calendar.YEAR, 1);
-                    payment.setReturnDate(calendar.getTime());
-                } else if (loanObj.getTotalReturnPeriod() == 4) {
-                    calendar.add(Calendar.MONTH, 6);
-                    payment.setReturnDate(calendar.getTime());
+                } else {
+                    calendar.add(Calendar.MONTH, paymentPlan.getMonthInterval());
                 }
+                payment.setReturnDate(calendar.getTime());
                 paymentRepository.save(payment);
             }
 

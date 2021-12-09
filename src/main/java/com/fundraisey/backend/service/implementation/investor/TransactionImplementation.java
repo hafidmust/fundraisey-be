@@ -107,12 +107,12 @@ public class TransactionImplementation implements TransactionService {
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
             Transaction transaction = transactionRepository.getById(transactionRequestModel.getTransactionId());
+            if (transaction == null) return responseTemplate.notFound("Transaction not found");
 
             Calendar calendar = Calendar.getInstance();
             Integer timeComparison = calendar.getTime().compareTo(transaction.getPaymentDeadline());
             if (timeComparison == 1) return responseTemplate.notAllowed("Payment deadline exceeded");
 
-            if (transaction == null) return responseTemplate.notFound("Transaction not found");
             if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
                     "owner transaction");
             if (investor == null) return responseTemplate.notFound("Investor not found");
