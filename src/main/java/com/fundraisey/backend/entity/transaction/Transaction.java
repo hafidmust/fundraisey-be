@@ -55,7 +55,8 @@ public class Transaction extends DateProps implements Serializable {
 
     @Column(name = "payment_deadline")
     @Temporal(TemporalType.TIMESTAMP)
-    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+//    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+    @JsonFormat(pattern="dd MMM yyyy HH:mm:ss", timezone = "Asia/Jakarta")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date paymentDeadline;
 
