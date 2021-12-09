@@ -388,6 +388,7 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setLenderCount(lenderCount);
         loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
         loanDetailModel.setStartup(loan.getStartup());
+        loanDetailModel.setWithdrawn(loan.isWithdrawn());
 
         return loanDetailModel;
     }
@@ -410,6 +411,7 @@ public class LoanImplementation implements LoanService {
         loanModel.setStatus(loan.getStatus().toString());
         loanModel.setLenderCount(lenderCount);
         loanModel.setPaymentList(createPaymentList(loan.getId()));
+        loanModel.setWithdrawn(loan.isWithdrawn());
 
         return loanModel;
     }
