@@ -20,6 +20,15 @@ public class PaymentPlan {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "interest_rate")
+    private Float interestRate;
+
+    @Column(name = "month_interval")
+    private Integer monthInterval;
+
+    @Column(name = "total_period")
+    private Integer totalPeriod;
+
     @JsonIgnore
     @OneToMany(mappedBy = "paymentPlan")
     private List<Loan> loans;

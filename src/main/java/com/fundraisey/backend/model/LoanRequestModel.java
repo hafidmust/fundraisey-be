@@ -12,6 +12,5 @@ public class LoanRequestModel {
     String description;
     @JsonFormat(pattern="yyyy-MM-dd")
     Date endDate;
-    Float interestRate;
     Long paymentPlanId;
 }
