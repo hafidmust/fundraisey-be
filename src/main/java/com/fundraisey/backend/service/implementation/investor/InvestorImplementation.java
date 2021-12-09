@@ -49,7 +49,7 @@ public class InvestorImplementation implements InvestorService {
             Investor investor = investorRepository.getByUserId(user.getId());
             InvestorVerification investorVerification = investor.getInvestorVerification();
 
-            investorResponseModel.setId(user.getId());
+            investorResponseModel.setId(investor.getId());
             investorResponseModel.setEmail(user.getEmail());
 
             if (investor != null) {
