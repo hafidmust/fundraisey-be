@@ -20,5 +20,6 @@ public class LoanModel {
     Float interestRate;
     Integer lenderCount;
     String status;
+    boolean isWithdrawn;
     List<StartupPaymentListModel> paymentList;
 }

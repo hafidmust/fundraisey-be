@@ -21,6 +21,7 @@ public class LoanDetailModel {
     Float interestRate;
     Integer lenderCount;
     String status;
+    boolean isWithdrawn;
     List<StartupPaymentListModel> paymentList;
     Startup startup;
 }
