@@ -117,7 +117,8 @@ public class LoanImplementation implements LoanService {
         try {
             User user = userRepository.findOneByEmail(email);
             Startup startup = startupRepository.findByUser(user);
-            List<LoanModel> response = new ArrayList<>();
+            List<LoanModel> loanList = new ArrayList<>();
+            LoanResponseModel response = new LoanResponseModel();
 
             if ((sortType.equals("desc")) || (sortType.equals("descending"))) {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).descending());
@@ -129,8 +130,14 @@ public class LoanImplementation implements LoanService {
             for (Loan loan : loans.getContent()) {
                 LoanModel loanModel = createLoanModel(loan);
 
-                response.add(loanModel);
+                loanList.add(loanModel);
             }
+            response.setContent(loanList);
+            response.setTotalElements(loans.getTotalElements());
+            response.setTotalPages(loans.getTotalPages());
+            response.setNumberOfElements(loans.getNumberOfElements());
+            response.setSize(loans.getSize());
+            response.setPageNumber(loans.getNumber());
 
             return responseTemplate.success(response);
         } catch (Exception e) {
