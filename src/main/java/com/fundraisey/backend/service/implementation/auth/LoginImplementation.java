@@ -66,6 +66,9 @@ public class LoginImplementation implements LoginService {
                 return responseTemplate.isRequired("wrong password");
             }
 
+            System.out.println("body user ==> " + loginModel);
+
+
             String url = baseUrl + "/oauth/token?username=" + loginModel.getEmail() +
                     "&password=" + loginModel.getPassword() +
                     "&grant_type=" + loginModel.getGrant_type() +
