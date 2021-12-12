@@ -45,7 +45,7 @@ public class ReturnInstallment implements Serializable {
     @JsonManagedReference
     private PaymentInvoice paymentInvoice;
 
-    @OneToOne(targetEntity = Payment.class, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Payment.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id", referencedColumnName = "id")
     @JsonManagedReference
     private Payment payment;

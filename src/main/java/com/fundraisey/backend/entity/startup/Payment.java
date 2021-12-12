@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,9 +36,9 @@ public class Payment {
     @Column(name = "status")
     ReturnStatus status = ReturnStatus.unpaid;
 
-    @OneToOne(mappedBy = "payment")
+    @OneToMany(mappedBy = "payment")
     @JsonBackReference
-    private ReturnInstallment returnInstallment;
+    private List<ReturnInstallment> returnInstallment;
 
     @JsonIgnore
     @ManyToOne(targetEntity = Loan.class, cascade = CascadeType.ALL)
