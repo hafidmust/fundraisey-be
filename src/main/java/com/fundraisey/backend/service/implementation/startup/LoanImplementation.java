@@ -251,8 +251,32 @@ public class LoanImplementation implements LoanService {
     public Map getPaymentDetail(Long loanId, Integer period) {
         try {
             Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+            if (payment == null) return responseTemplate.notFound("Payment not found");
+            Loan loan = payment.getLoan();
+            Long totalFundRaised = transactionRepository.sumOfPaidTransactionByLoanId(loanId);
+            if (totalFundRaised == null) totalFundRaised = 0L;
 
-            return responseTemplate.success(payment);
+            Long amountPeriod = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+            if (amountPeriod == null) amountPeriod = 0L;
+            Long totalPaymentAmount =
+                    returnInstallmentRepository.getAmountSumByLoanid(loan.getId());
+            if (totalPaymentAmount == null) totalPaymentAmount = 0L;
+
+            Long interest = totalPaymentAmount - totalFundRaised;
+
+            PaymentDetailResponseModel responseModel = new PaymentDetailResponseModel();
+            responseModel.setReturnPeriod(payment.getReturnPeriod());
+            responseModel.setReturnDate(payment.getReturnDate());
+            responseModel.setStatus(payment.getStatus());
+            responseModel.setLoanId(loan.getId());
+            responseModel.setLoanName(loan.getName());
+            responseModel.setAmountPeriod(amountPeriod);
+            responseModel.setTotalPaymentAmount(totalPaymentAmount);
+            responseModel.setTotalFundRaised(totalFundRaised);
+            responseModel.setInterest(interest);
+            responseModel.setPaymentPlan(loan.getPaymentPlan());
+
+            return responseTemplate.success(responseModel);
         } catch (Exception e) {
             e.printStackTrace();
             return responseTemplate.internalServerError(e);
