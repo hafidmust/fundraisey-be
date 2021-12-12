@@ -70,7 +70,10 @@ public class TransactionImplementation implements TransactionService {
 
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
-            if (investor == null) return responseTemplate.notFound("Investor not found");
+            if (investor == null)
+                return responseTemplate.notFound("Investor not found");
+            if (!investor.getInvestorVerification().isVerified())
+                return responseTemplate.notAllowed("Investor unverified");
             if (loan.getStatus() == LoanStatus.pending) return responseTemplate.notAllowed("Loan acceptance pending");
             if (loan.getStatus() == LoanStatus.rejected) return responseTemplate.notAllowed("Loan acceptance rejected");
             if (loan.getStatus() == LoanStatus.withdrawn) return responseTemplate.notAllowed("Loan already withdrawn");
@@ -106,16 +109,16 @@ public class TransactionImplementation implements TransactionService {
         try {
             User user = userRepository.findOneByEmail(email);
             Investor investor = investorRepository.findByUser(user);
+            if (investor == null) return responseTemplate.notFound("Investor not found");
             Transaction transaction = transactionRepository.getById(transactionRequestModel.getTransactionId());
             if (transaction == null) return responseTemplate.notFound("Transaction not found");
+            if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
+                    "owner transaction");
 
             Calendar calendar = Calendar.getInstance();
             Integer timeComparison = calendar.getTime().compareTo(transaction.getPaymentDeadline());
             if (timeComparison == 1) return responseTemplate.notAllowed("Payment deadline exceeded");
 
-            if (transaction.getInvestor().getId() != investor.getId()) return responseTemplate.notAllowed("Not the " +
-                    "owner transaction");
-            if (investor == null) return responseTemplate.notFound("Investor not found");
             if (transaction.getTransactionStatus() == TransactionStatus.paid) return responseTemplate.notAllowed("Already paid");
 
             // Check if total current value + new transaction amount exceed total value
