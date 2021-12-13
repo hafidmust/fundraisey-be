@@ -32,5 +32,6 @@ public class InvestorVerification {
     private boolean isVerified;
 
     @Column(name = "status")
+//    @Enumerated(EnumType.STRING)
     private InvestorVerificationStatus status;
 }

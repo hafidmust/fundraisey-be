@@ -17,4 +17,7 @@ public interface InvestorVerificationRepository extends PagingAndSortingReposito
     InvestorVerification getByInvestorId(@Param("investorId") Long investorId);
 
     Page<InvestorVerification> findByIsVerified(boolean isVerified, Pageable pageable);
+
+    @Query("SELECT i FROM InvestorVerification i WHERE i.status=0 AND i.investor.user.enabled = true")
+    Page<InvestorVerification> getByStatusPendingAndUserIsEnabled(Pageable pageable);
 }
