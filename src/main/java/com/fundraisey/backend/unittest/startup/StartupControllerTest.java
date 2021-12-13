@@ -265,4 +265,37 @@ public class StartupControllerTest extends UnitTest {
         System.out.println("Response = ");
         System.out.println(content);
     }
+
+    @Test
+    public void insertLoan() throws Exception {
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/v1/login")
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(this.body)
+        ).andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        response = response.replace("{\"data\":{\"access_token\":\"", "");
+        String token = response.replace("\",\"is_enabled\":true,\"roles\":[\"ROLE_STARTUP\"]},\"message\":\"success\",\"status\":200}", "");
+
+        String uri = "/v1/loan/insert";
+
+        String reqJson = "{\n" +
+                "    \"title\":\"Test Loan\",\n" +
+                "    \"targetValue\":10000000,\n" +
+                "    \"description\":\"This is a description for test loan\",\n" +
+                "    \"endDate\":\"2022-01-01\",\n" +
+                "    \"interestRate\":10,\n" +
+                "    \"paymentPlanId\":2\n" +
+                "}";
+
+        MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.post(uri)
+                .header("Authorization", "Bearer " + token)
+                .principal(principal)
+                .contentType(MediaType.APPLICATION_JSON_VALUE).content(reqJson)).andReturn();
+
+        int status = mvcResult.getResponse().getStatus();
+        assertEquals(200, status);
+        String content = mvcResult.getResponse().getContentAsString();
+        System.out.println("Response=");
+        System.out.println(content);
+    }
 }

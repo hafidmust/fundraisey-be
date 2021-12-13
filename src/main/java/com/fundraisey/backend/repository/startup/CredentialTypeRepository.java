@@ -8,4 +8,6 @@ import org.springframework.data.repository.query.Param;
 public interface CredentialTypeRepository extends JpaRepository<CredentialType, Long> {
     @Query("SELECT c FROM CredentialType c WHERE id = :id")
     CredentialType getById(@Param("id") Long id);
+
+    CredentialType findOneByName(String name);
 }
