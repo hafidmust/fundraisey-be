@@ -127,7 +127,8 @@ public class AdminImplementation implements AdminService {
                 pageable = PageRequest.of(page, size, Sort.by(sortAttribute).ascending());
             }
 
-            investorVerifications = investorVerificationRepository.findByIsVerified(false, pageable);
+//            investorVerifications = investorVerificationRepository.findByIsVerified(false, pageable);
+            investorVerifications = investorVerificationRepository.getByStatusPendingAndUserIsEnabled(pageable);
 
             return responseTemplate.success(investorVerifications);
         } catch (Exception e) {
