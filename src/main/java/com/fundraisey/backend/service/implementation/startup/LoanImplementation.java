@@ -365,6 +365,7 @@ public class LoanImplementation implements LoanService {
 
             WithdrawalInvoice savedWithdrawalInvoice = withdrawalInvoiceRepository.save(withdrawalInvoice);
             loan.setWithdrawn(true);
+            loanRepository.save(loan);
 
             return responseTemplate.success(savedWithdrawalInvoice);
 
