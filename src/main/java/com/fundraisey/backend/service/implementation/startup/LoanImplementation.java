@@ -421,6 +421,7 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
         loanDetailModel.setStartup(loan.getStartup());
         loanDetailModel.setWithdrawn(loan.isWithdrawn());
+        loanDetailModel.setPaymentPlan(loan.getPaymentPlan());
 
         return loanDetailModel;
     }

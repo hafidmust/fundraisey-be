@@ -1,6 +1,7 @@
 package com.fundraisey.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fundraisey.backend.entity.startup.PaymentPlan;
 import com.fundraisey.backend.entity.startup.Startup;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class LoanDetailModel {
     Integer lenderCount;
     String status;
     boolean isWithdrawn;
+    PaymentPlan paymentPlan;
     List<StartupPaymentListModel> paymentList;
     Startup startup;
 }
