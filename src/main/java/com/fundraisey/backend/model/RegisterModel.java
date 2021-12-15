@@ -14,4 +14,5 @@ public class RegisterModel {
     private String phoneNumber;
     private Gender gender;
     private Date dateOfBirth;
+    private String bankAccountNumber;
 }

@@ -2,13 +2,15 @@ package com.fundraisey.backend.entity.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fundraisey.backend.entity.DateProps;
+import com.fundraisey.backend.entity.investor.Investor;
+import com.fundraisey.backend.entity.startup.LoanComment;
+import com.fundraisey.backend.entity.startup.Startup;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -190,16 +192,34 @@ public class User extends DateProps implements UserDetails, Serializable {
         this.otpExpiredDate = otpExpiredDate;
     }
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    List<UserDetail> userDetail;
+    @OneToOne(mappedBy = "user")
+    private Investor investor;
 
-    List<UserDetail> getUserDetail() {
-        return userDetail;
+    private Investor getInvestor() {
+        return investor;
     }
 
-    void setUserDetail(List<UserDetail> userDetail) {
-        this.userDetail = userDetail;
+    private void setInvestor(Investor investor) {
+        this.investor = investor;
+    }
+
+    // user <-> startup
+    @OneToOne(mappedBy = "user")
+    private Startup startup;
+
+    private Startup getStartup() { return startup; }
+
+    private void setStartup(Startup start) { this.startup = start; }
+
+    @OneToMany(mappedBy = "user")
+    private List<LoanComment> loanComment;
+
+    private List<LoanComment> getLoanComment() {
+        return this.loanComment;
+    }
+
+    private void setLoanComment(List<LoanComment> loanComment) {
+        this.loanComment = loanComment;
     }
 }
 

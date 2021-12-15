@@ -2,10 +2,12 @@ package com.fundraisey.backend.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class ResponseTemplate {
     public Map<String, Object> success(Object data) {
         Map<String, Object> map = new HashMap();

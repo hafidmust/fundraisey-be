@@ -1,7 +1,10 @@
 package com.fundraisey.backend.util;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Random;
 
+@Component
 public class SimpleStringUtils {
     public static String randomString(int size) {
         return randomString(size, false);
