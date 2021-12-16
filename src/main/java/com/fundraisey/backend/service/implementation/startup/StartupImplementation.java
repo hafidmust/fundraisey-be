@@ -2,6 +2,7 @@ package com.fundraisey.backend.service.implementation.startup;
 
 import com.fundraisey.backend.entity.auth.User;
 import com.fundraisey.backend.entity.startup.*;
+import com.fundraisey.backend.model.StartupPICModel;
 import com.fundraisey.backend.model.startup.StartupModel;
 import com.fundraisey.backend.repository.auth.RoleRepository;
 import com.fundraisey.backend.repository.auth.UserRepository;
@@ -179,6 +180,39 @@ public class StartupImplementation implements StartupService {
             return responseTemplate.success("This startup is deleted!");
         } catch (Exception e) {
             log.error("Failed to delete startup id {}: {}", startupId, e.getMessage());
+            return responseTemplate.internalServerError(e.getLocalizedMessage());
+        }
+    }
+
+    public Map getPIC(String email) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+
+            response.put("pic_name", startup.getPicName());
+            response.put("pic_phone", startup.getPicPhone());
+
+            return responseTemplate.success(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return responseTemplate.internalServerError(e.getLocalizedMessage());
+        }
+    }
+
+    public Map updatePIC(String email, StartupPICModel startupPICModel) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Startup startup = startupRepository.getByUserEmail(email);
+
+            if (!startupPICModel.getPicPhone().matches("^\\+?(\\d+)\\-?(\\d*)\\-?(\\d+)$"))
+                return responseTemplate.notAllowed("Invalid phone number");
+            startup.setPicName(startupPICModel.getPicName());
+            startup.setPicPhone(startupPICModel.getPicPhone());
+            startupRepository.save(startup);
+
+            return responseTemplate.success(null);
+        } catch (Exception e) {
+            e.printStackTrace();
             return responseTemplate.internalServerError(e.getLocalizedMessage());
         }
     }
