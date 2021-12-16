@@ -1,5 +1,6 @@
 package com.fundraisey.backend.controller.startup;
 
+import com.fundraisey.backend.model.StartupPICModel;
 import com.fundraisey.backend.model.startup.StartupModel;
 import com.fundraisey.backend.service.interfaces.UserService;
 import com.fundraisey.backend.service.interfaces.startup.StartupService;
@@ -67,9 +68,17 @@ public class StartupController {
     }
 
     @Secured("ROLE_STARTUP")
-    @GetMapping("/upload/logo")
-    ResponseEntity<Map> uploadLogo(Principal principal) {
-        return null;
+    @GetMapping("/pic")
+    ResponseEntity<Map> getPIC(Principal principal) {
+        Map response = startupService.getPIC(principal.getName());
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @Secured("ROLE_STARTUP")
+    @PutMapping("/pic")
+    ResponseEntity<Map> updatePIC(@RequestBody StartupPICModel startupPICModel, Principal principal) {
+        Map response = startupService.updatePIC(principal.getName(), startupPICModel);
+        return responseTemplate.controllerHttpRestResponse(response);
     }
 
 //    @Secured({"ROLE_STARTUP"})

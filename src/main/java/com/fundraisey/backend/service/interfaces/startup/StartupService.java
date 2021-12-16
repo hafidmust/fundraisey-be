@@ -1,5 +1,6 @@
 package com.fundraisey.backend.service.interfaces.startup;
 
+import com.fundraisey.backend.model.StartupPICModel;
 import com.fundraisey.backend.model.startup.StartupModel;
 
 import java.security.Principal;
@@ -11,4 +12,6 @@ public interface StartupService {
     Map insert(StartupModel startupModel, String email);
     Map update(StartupModel startupModel, String email);
     Map delete(Long startupId, String email);
+    Map getPIC(String email);
+    Map updatePIC(String email, StartupPICModel startupPICModel);
 }

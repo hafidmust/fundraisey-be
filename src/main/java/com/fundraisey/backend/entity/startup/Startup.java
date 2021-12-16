@@ -71,6 +71,14 @@ public class Startup extends DateProps implements Serializable {
     private User user;
 
     @JsonIgnore
+    @Column(name = "pic_name", nullable = true)
+    private String picName;
+
+    @JsonIgnore
+    @Column(name = "pic_phone", nullable = true)
+    private String picPhone;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "startup", cascade = CascadeType.ALL)
     private List<Loan> loans;
 
