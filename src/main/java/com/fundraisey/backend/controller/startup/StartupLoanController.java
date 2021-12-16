@@ -1,0 +1,68 @@
+package com.fundraisey.backend.controller.startup;
+
+import com.fundraisey.backend.model.StartupLoanRequestModel;
+import com.fundraisey.backend.model.StartupWithdrawRequestModel;
+import com.fundraisey.backend.repository.startup.WithdrawalInvoiceRepository;
+import com.fundraisey.backend.service.interfaces.startup.LoanService;
+import com.fundraisey.backend.util.ResponseTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/v1/startup/loan")
+public class StartupLoanController {
+    @Autowired
+    LoanService loanService;
+    @Autowired
+    ResponseTemplate responseTemplate;
+
+    @GetMapping("/{id}/payment-list")
+    ResponseEntity<Map> getPaymentList(@PathVariable("id") Long loanId) {
+        Map response = loanService.getPaymentList(loanId);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @GetMapping("/{id}/payment")
+    ResponseEntity<Map> getPaymentDetail(
+            @PathVariable("id") Long loanId,
+            @RequestParam(value = "period") Integer period) {
+        Map response = loanService.getPaymentDetail(loanId, period);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @PostMapping("/pay")
+    ResponseEntity<Map> pay(@RequestBody StartupLoanRequestModel startupLoanRequestModel, Principal principal) {
+        Map response = loanService.payInvestor(principal.getName(), startupLoanRequestModel.getLoanId(),
+                startupLoanRequestModel.getPeriod());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @PostMapping("/withdraw")
+    ResponseEntity<Map> withdraw(@RequestBody StartupWithdrawRequestModel withdrawRequestModel, Principal principal) {
+        Map response = loanService.withdraw(principal.getName(), withdrawRequestModel);
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @GetMapping("/withdraw-history")
+    ResponseEntity<Map> getWithdrawalHistory(Principal principal) {
+        Map response = loanService.getWithdrawalHistory(principal.getName());
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+
+    @GetMapping("withdraw/bank-list")
+    ResponseEntity<Map> getBankList(Principal principal) {
+        Map response = loanService.getBankList();
+
+        return responseTemplate.controllerHttpRestResponse(response);
+    }
+}
