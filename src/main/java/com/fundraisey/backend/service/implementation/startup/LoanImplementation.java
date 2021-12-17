@@ -15,6 +15,7 @@ import com.fundraisey.backend.service.interfaces.startup.LoanService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,11 @@ public class LoanImplementation implements LoanService {
     PaymentRepository paymentRepository;
     @Autowired
     BankRepository bankRepository;
+    @Autowired
+    PlatformFeeInvoiceRepository platformFeeInvoiceRepository;
+
+    @Value("${platform_fee_percentage:5}")
+    Float platformFeePercentage;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
@@ -198,11 +204,14 @@ public class LoanImplementation implements LoanService {
             if (loan == null) return responseTemplate.notFound("Loan not found");
             if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
             Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+            Long currentLoanValue = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+            Long paymentFee = (long) (currentLoanValue.floatValue() * platformFeePercentage / 100);
 
             List<ReturnInstallment> returnInstallments =
                     returnInstallmentRepository.getByLoanIdAndPeriod(loanId, period);
             Integer paidCount = 0;
             Long paymentSum = 0L;
+
             for (ReturnInstallment returnInstallment : returnInstallments) {
                 if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
                     continue;
@@ -225,10 +234,18 @@ public class LoanImplementation implements LoanService {
             payment.setStatus(ReturnStatus.paid);
             Payment saved = paymentRepository.save(payment);
 
+            PlatformFeeInvoice platformFeeInvoice = new PlatformFeeInvoice();
+            platformFeeInvoice.setPayment(saved);
+            platformFeeInvoice.setAmount(paymentFee);
+            platformFeeInvoice.setPaymentDate(new Date());
+            platformFeeInvoiceRepository.save(platformFeeInvoice);
+
             response.put("paid transaction count", paidCount);
             response.put("unpaid transaction count", returnInstallments.size() - paidCount);
-            response.put("payment sum", paymentSum);
-            response.put("paymentData", payment);
+            response.put("payment to investor(s)", paymentSum);
+            response.put("payment fee", paymentFee);
+            response.put("platfom fee invoice", platformFeeInvoice);
+
             return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
