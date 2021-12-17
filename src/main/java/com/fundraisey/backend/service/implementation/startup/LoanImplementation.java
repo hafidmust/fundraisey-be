@@ -366,7 +366,7 @@ public class LoanImplementation implements LoanService {
 
             Date currentDate = new Date();
             Integer isEnded = currentDate.compareTo(loan.getEndDate());
-            if ((currentValue < loan.getTargetValue()) && (isEnded < 0)) {
+            if ((currentValue < loan.getTargetValue()) && (isEnded <= 0)) {
                 return responseTemplate.notAllowed("Loan period not ended and target value not achieved");
             }
 
