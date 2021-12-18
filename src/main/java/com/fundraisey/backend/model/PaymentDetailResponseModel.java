@@ -17,5 +17,8 @@ public class PaymentDetailResponseModel {
     Long totalPaymentAmount;
     Long totalFundRaised;
     Long interest;
+    Long interestPerPeriod;
+    Long platformFee;
+    Float platformFeeRate;
     PaymentPlan paymentPlan;
 }
