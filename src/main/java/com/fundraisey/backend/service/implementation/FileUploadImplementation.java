@@ -210,7 +210,7 @@ public class FileUploadImplementation implements FileUploadService {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
-        if (extension.equals("jpg") || extension.equals("jpg")) {
+        if (extension.equals("jpeg") || extension.equals("jpg")) {
             metadata.setContentType("image/jpg");
         } else if (extension.equals("png")) {
             metadata.setContentType("image/png");
