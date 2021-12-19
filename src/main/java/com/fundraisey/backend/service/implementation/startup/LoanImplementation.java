@@ -475,6 +475,7 @@ public class LoanImplementation implements LoanService {
 
     Long calculatePlatformFee(Loan loan) {
         Long totalFundRaised = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+        if (totalFundRaised == null) totalFundRaised = 0L;
         Long platformFee = (long) (totalFundRaised * platformFeePercentage / 100 / loan.getPaymentPlan().getTotalPeriod());
 
         return platformFee;
