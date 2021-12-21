@@ -34,7 +34,7 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    ReturnStatus status = ReturnStatus.unpaid;
+    private ReturnStatus status = ReturnStatus.unpaid;
 
     @OneToMany(mappedBy = "payment")
     @JsonBackReference
@@ -44,4 +44,8 @@ public class Payment {
     @ManyToOne(targetEntity = Loan.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "loan_id", referencedColumnName = "id")
     private Loan loan;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "payment")
+    private PlatformFeeInvoice platformFeeInvoice;
 }

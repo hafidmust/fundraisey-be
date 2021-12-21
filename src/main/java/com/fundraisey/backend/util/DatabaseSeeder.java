@@ -121,9 +121,9 @@ public class DatabaseSeeder implements ApplicationRunner {
     };
 
     private String[] paymentPlans = new String[] {
-            "cash:10:0:1",
-            "per1year:15:12:2",
-            "per6months:20:6:4"
+            "cash:5:0:1",
+            "per1year:10:12:2",
+            "per6months:15:6:4"
     };
 
     private String[] banks = new String[] {

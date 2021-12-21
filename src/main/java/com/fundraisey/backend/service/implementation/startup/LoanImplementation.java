@@ -15,6 +15,7 @@ import com.fundraisey.backend.service.interfaces.startup.LoanService;
 import com.fundraisey.backend.util.ResponseTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,11 @@ public class LoanImplementation implements LoanService {
     PaymentRepository paymentRepository;
     @Autowired
     BankRepository bankRepository;
+    @Autowired
+    PlatformFeeInvoiceRepository platformFeeInvoiceRepository;
+
+    @Value("${platform_fee_percentage:5}")
+    Float platformFeePercentage;
 
     public Map insert(String email, LoanRequestModel loanRequestModel) {
         try {
@@ -198,11 +204,14 @@ public class LoanImplementation implements LoanService {
             if (loan == null) return responseTemplate.notFound("Loan not found");
             if (startup.getId() != loan.getStartup().getId()) return responseTemplate.notAllowed("Not loan owner");
             Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+            Long currentLoanValue = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+            Long platformFee = (long) (currentLoanValue.floatValue() * platformFeePercentage / 100);
 
             List<ReturnInstallment> returnInstallments =
                     returnInstallmentRepository.getByLoanIdAndPeriod(loanId, period);
             Integer paidCount = 0;
             Long paymentSum = 0L;
+
             for (ReturnInstallment returnInstallment : returnInstallments) {
                 if (returnInstallment.getReturnStatus() == ReturnStatus.paid) {
                     continue;
@@ -225,10 +234,18 @@ public class LoanImplementation implements LoanService {
             payment.setStatus(ReturnStatus.paid);
             Payment saved = paymentRepository.save(payment);
 
+            PlatformFeeInvoice platformFeeInvoice = new PlatformFeeInvoice();
+            platformFeeInvoice.setPayment(saved);
+            platformFeeInvoice.setAmount(platformFee);
+            platformFeeInvoice.setPaymentDate(new Date());
+            platformFeeInvoiceRepository.save(platformFeeInvoice);
+
             response.put("paid transaction count", paidCount);
             response.put("unpaid transaction count", returnInstallments.size() - paidCount);
-            response.put("payment sum", paymentSum);
-            response.put("paymentData", payment);
+            response.put("payment to investor(s)", paymentSum);
+            response.put("platform fee", platformFee);
+            response.put("platfom fee invoice", platformFeeInvoice);
+
             return responseTemplate.success(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -263,6 +280,7 @@ public class LoanImplementation implements LoanService {
             if (totalPaymentAmount == null) totalPaymentAmount = 0L;
 
             Long interest = totalPaymentAmount - totalFundRaised;
+            Long platformFee = calculatePlatformFee(loan);
 
             PaymentDetailResponseModel responseModel = new PaymentDetailResponseModel();
             responseModel.setReturnPeriod(payment.getReturnPeriod());
@@ -275,6 +293,9 @@ public class LoanImplementation implements LoanService {
             responseModel.setTotalFundRaised(totalFundRaised);
             responseModel.setInterest(interest);
             responseModel.setPaymentPlan(loan.getPaymentPlan());
+            responseModel.setPlatformFee(platformFee);
+            responseModel.setPlatformFeeRate(platformFeePercentage);
+            responseModel.setInterestPerPeriod(interest/loan.getPaymentPlan().getTotalPeriod());
 
             return responseTemplate.success(responseModel);
         } catch (Exception e) {
@@ -286,22 +307,25 @@ public class LoanImplementation implements LoanService {
     private List<StartupPaymentListModel> createPaymentList(Long loanId) {
         Loan loan = loanRepository.getById(loanId);
         Integer totalReturnPeriod = loan.getTotalReturnPeriod();
-        List<Payment> payments = paymentRepository.getByLoanId(loanId);
+
         List<StartupPaymentListModel> paymentListModel = new ArrayList<>();
 
         // Create payment date(s)
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(loan.getEndDate());
+        Long platformFee = calculatePlatformFee(loan);
         for (Integer period = 1; period <= totalReturnPeriod; period++) {
             Payment payment = paymentRepository.getByLoanIdAndPeriod(loanId, period);
+            Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
+            if (totalAmount == null) totalAmount = 0L;
+
             StartupPaymentListModel paymentModel = new StartupPaymentListModel();
+            paymentModel.setTotalAmount(totalAmount);
             paymentModel.setPeriod(period);
             paymentModel.setReturnDate(payment.getReturnDate());
-
-            Long totalAmount = returnInstallmentRepository.getAmountSumByLoanIdAndPeriod(loanId, period);
-
-            if (totalAmount == null) totalAmount = 0L;
-            paymentModel.setTotalAmount(totalAmount);
+            paymentModel.setPlatformFee(platformFee);
+            paymentModel.setInterestRate(loan.getPaymentPlan().getInterestRate());
+            paymentModel.setPlatformFeeRate(platformFeePercentage);
 
             if (loan.getTransactions().size() != 0) {
                 ReturnInstallment returnInstallment =
@@ -415,7 +439,7 @@ public class LoanImplementation implements LoanService {
         loanDetailModel.setEndDate(loan.getEndDate());
         loanDetailModel.setTargetValue(loan.getTargetValue());
         loanDetailModel.setCurrentValue(currentValue);
-        loanDetailModel.setInterestRate(loan.getInterestRate());
+        loanDetailModel.setInterestRate(loan.getPaymentPlan().getInterestRate());
         loanDetailModel.setStatus(loan.getStatus().toString());
         loanDetailModel.setLenderCount(lenderCount);
         loanDetailModel.setPaymentList(createPaymentList(loan.getId()));
@@ -440,12 +464,20 @@ public class LoanImplementation implements LoanService {
         loanModel.setEndDate(loan.getEndDate());
         loanModel.setTargetValue(loan.getTargetValue());
         loanModel.setCurrentValue(currentValue);
-        loanModel.setInterestRate(loan.getInterestRate());
+        loanModel.setInterestRate(loan.getPaymentPlan().getInterestRate());
         loanModel.setStatus(loan.getStatus().toString());
         loanModel.setLenderCount(lenderCount);
         loanModel.setPaymentList(createPaymentList(loan.getId()));
         loanModel.setWithdrawn(loan.isWithdrawn());
 
         return loanModel;
+    }
+
+    Long calculatePlatformFee(Loan loan) {
+        Long totalFundRaised = transactionRepository.sumOfPaidTransactionByLoanId(loan.getId());
+        if (totalFundRaised == null) totalFundRaised = 0L;
+        Long platformFee = (long) (totalFundRaised * platformFeePercentage / 100 / loan.getPaymentPlan().getTotalPeriod());
+
+        return platformFee;
     }
 }
