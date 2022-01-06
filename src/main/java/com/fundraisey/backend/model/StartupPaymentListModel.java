@@ -11,5 +11,8 @@ public class StartupPaymentListModel {
     @JsonFormat(pattern = "yyyy-MM-dd")
     Date returnDate;
     Long totalAmount;
+    Float interestRate;
     boolean isPaid;
+    Long platformFee;
+    Float platformFeeRate;
 }
